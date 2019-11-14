@@ -18,7 +18,6 @@ const TetrisCell = props => {
     const { cell } = props;
     if (cell.isEmpty) {
         // return <img style={{ width: "100%", height: "100%" }} src={blankCell} ></img >
-        // return <div style={{ width: "100%", height: "100%", background: "black" }} />
         return null
     } else {
         // return <div style={{ width: "100%", height: "100%", background: cell.color }} />

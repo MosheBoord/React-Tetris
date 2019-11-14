@@ -6,6 +6,7 @@ export default class TetrisPiece {
         // this.y = Math.floor(Math.random() * 16) + 1;//5;
         this.x = 3;
         this.y = -3;
+        // this.y = 5;
         if (config.type === TetrisPiece.RANDOM) {
             config.type = Math.floor(Math.random() * 7);
         }
@@ -123,6 +124,24 @@ export default class TetrisPiece {
         })
         return flag;
     }
+
+    rotateClockwise() {
+        this.cells.forEach(cell => {
+            const x = cell.x;
+            const y = cell.y;
+            cell.x = 3 - y;
+            cell.y = x;
+        })
+    }
+
+    rotateCounterClockwise() {
+        this.cells.forEach(cell => {
+            const x = cell.x;
+            const y = cell.y;
+            cell.x = y;
+            cell.y = 3 - x;
+        })
+    }
 }
 
 TetrisPiece.RANDOM = "RANDOM";
@@ -141,3 +160,10 @@ TetrisPiece.Yellow = 3;
 TetrisPiece.Green = 4;
 TetrisPiece.Purple = 5;
 TetrisPiece.Orange = 6;
+
+TetrisPiece.MAPPEDCLOCKWISEROTATIONS = {
+    "00": { x: 3, y: 0 }, "10": { x: 3, y: 1 }, "20": { x: 3, y: 2 }, "30": { x: 3, y: 3 },
+    "01": { x: 2, y: 0 }, "11": { x: 2, y: 1 }, "21": { x: 2, y: 2 }, "31": { x: 2, y: 3 },
+    "02": { x: 1, y: 0 }, "12": { x: 1, y: 1 }, "22": { x: 1, y: 2 }, "32": { x: 1, y: 3 },
+    "03": { x: 0, y: 0 }, "13": { x: 0, y: 1 }, "23": { x: 0, y: 2 }, "33": { x: 0, y: 3 },
+}

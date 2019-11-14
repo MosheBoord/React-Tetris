@@ -11,7 +11,7 @@ export default class Tetris extends VideoGame {
         this.nextPiece = this.getNextPiece();
         this.currentPiece = this.getNextPiece();
         this.pieces = [this.currentPiece];
-        this.keysStatus = { right: 0, left: 0, down: 0 };
+        this.keysStatus = { right: 0, left: 0, down: 0, rotateClockwise: 0, rotateCounterClockwise: 0 };
         document.addEventListener("keydown", this.keyPressed.bind(this));
         this.level = 10;
         this.framesStalled = 0;
@@ -27,6 +27,12 @@ export default class Tetris extends VideoGame {
                 break;
             case KeyEvent.DOM_VK_DOWN:
                 this.keysStatus.down++;
+                break;
+            case KeyEvent.DOM_VK_X:
+                this.keysStatus.rotateClockwise++;
+                break;
+            case KeyEvent.DOM_VK_Z:
+                this.keysStatus.rotateCounterClockwise++;
                 break;
             default:
         }
@@ -51,24 +57,7 @@ export default class Tetris extends VideoGame {
             if (this.currentPiece) {
                 if (this.currentPiece.canMoveDown(prevBoard)) {
                     this.currentPiece.y++;
-                    if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
-                        this.currentPiece.x++;
-                        this.keysStatus.right--;
-                    } else {
-                        this.keysStatus.right = 0;
-                    }
-                    if (this.keysStatus.left && this.currentPiece && this.currentPiece.canMoveLeft(prevBoard)) {
-                        this.currentPiece.x--;
-                        this.keysStatus.left--;
-                    } else {
-                        this.keysStatus.left = 0;
-                    }
-                    if (this.keysStatus.down && this.currentPiece && this.currentPiece.canMoveDown(prevBoard)) {
-                        this.currentPiece.y++;
-                        this.keysStatus.down--;
-                    } else {
-                        this.keysStatus.down = 0;
-                    }
+                    this.calculateKeyMovements();
                 } else {
                     this.currentPiece.supported = true;
                     this.currentPiece = null;
@@ -81,19 +70,48 @@ export default class Tetris extends VideoGame {
             this.redrawState();
         } else {
             this.framesStalled++;
-            if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
-                this.currentPiece.x++;
-                this.keysStatus.right--;
-            }
-            if (this.keysStatus.left && this.currentPiece && this.currentPiece.canMoveLeft(prevBoard)) {
-                this.currentPiece.x--;
-                this.keysStatus.left--;
-            }
-            if (this.keysStatus.down && this.currentPiece && this.currentPiece.canMoveDown(prevBoard)) {
-                this.currentPiece.y++;
-                this.keysStatus.down--;
-            }
+            this.calculateKeyMovements();
             this.redrawState();
+        }
+    }
+
+    calculateKeyMovements() {
+        const prevBoard = this.getGameState();
+
+        if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
+            this.currentPiece.x++;
+            this.keysStatus.right--;
+        } else {
+            this.keysStatus.right = 0;
+        }
+
+        if (this.keysStatus.left && this.currentPiece && this.currentPiece.canMoveLeft(prevBoard)) {
+            this.currentPiece.x--;
+            this.keysStatus.left--;
+        } else {
+            this.keysStatus.left = 0;
+        }
+
+        if (this.keysStatus.down && this.currentPiece && this.currentPiece.canMoveDown(prevBoard)) {
+            this.currentPiece.y++;
+            this.keysStatus.down--;
+        } else {
+            this.keysStatus.down = 0;
+        }
+
+        // if (this.keysStatus.rotateClockwise && this.currentPiece && this.currentPiece.canRotateClockwise(prevBoard)) {
+        if (this.keysStatus.rotateClockwise) {
+            this.currentPiece.rotateClockwise();
+            this.keysStatus.rotateClockwise--;
+        } else {
+            this.keysStatus.rotateClockwise = 0;
+        }
+
+        if (this.keysStatus.rotateCounterClockwise) {
+            this.currentPiece.rotateCounterClockwise();
+            this.keysStatus.rotateCounterClockwise--;
+        } else {
+            this.keysStatus.rotateCounterClockwise = 0;
         }
     }
 
