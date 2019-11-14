@@ -74,9 +74,47 @@ export default class TetrisPiece {
         let flag = true;
         this.cells.forEach(cell => {
             try {
+                const y = this.y + cell.y;
+                const x = this.x + cell.x;
                 if (this.y + cell.y > 18) {
                     flag = false;
-                } else if (!board[this.y + cell.y + 1][this.x + cell.x].isEmpty && board[this.y + cell.y + 1][this.x + cell.x].piece !== this) {
+                } else if (!board[y + 1][x].isEmpty && board[y + 1][x].piece !== this) {
+                    flag = false;
+                }
+            } catch (error) {
+
+            }
+        })
+        return flag;
+    }
+
+    canMoveRight(board) {
+        let flag = true;
+        this.cells.forEach(cell => {
+            try {
+                const y = this.y + cell.y;
+                const x = this.x + cell.x;
+                if (x > 8) {
+                    flag = false;
+                } else if (!board[y][x + 1].isEmpty && board[y][x + 1].piece !== this) {
+                    flag = false;
+                }
+            } catch (error) {
+
+            }
+        })
+        return flag;
+    }
+
+    canMoveLeft(board) {
+        let flag = true;
+        this.cells.forEach(cell => {
+            try {
+                const y = this.y + cell.y;
+                const x = this.x + cell.x;
+                if (x < 1) {
+                    flag = false;
+                } else if (!board[y][x - 1].isEmpty && board[y][x - 1].piece !== this) {
                     flag = false;
                 }
             } catch (error) {

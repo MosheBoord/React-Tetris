@@ -11,30 +11,22 @@ export default class Tetris extends VideoGame {
         this.nextPiece = this.getNextPiece();
         this.currentPiece = this.getNextPiece();
         this.pieces = [this.currentPiece];
-        this.keysStatus = { right: 0, left: 0 };
+        this.keysStatus = { right: 0, left: 0, down: 0 };
         document.addEventListener("keydown", this.keyPressed.bind(this));
-        document.addEventListener("keyup", this.keyReleased.bind(this))
+        this.level = 10;
+        this.framesStalled = 0;
     }
 
     keyPressed(event) {
         switch (event.keyCode) {
             case KeyEvent.DOM_VK_RIGHT:
-                this.keysStatus.right = 1;
+                this.keysStatus.right++;
                 break;
             case KeyEvent.DOM_VK_LEFT:
-                this.keysStatus.left = 1;
+                this.keysStatus.left++;
                 break;
-            default:
-        }
-    }
-
-    keyReleased(event) {
-        switch (event.keyCode) {
-            case KeyEvent.DOM_VK_RIGHT:
-                this.keysStatus.right = 0;
-                break;
-            case KeyEvent.DOM_VK_LEFT:
-                this.keysStatus.left = 0;
+            case KeyEvent.DOM_VK_DOWN:
+                this.keysStatus.down++;
                 break;
             default:
         }
@@ -53,25 +45,66 @@ export default class Tetris extends VideoGame {
     }
 
     runNextFrame() {
-        let prevBoard = this.getGameState();
-        if (this.currentPiece) {
-            if (this.currentPiece.canMoveDown(prevBoard)) {
-                this.currentPiece.y++;
-                this.currentPiece.x += this.keysStatus.right - this.keysStatus.left;
+        const prevBoard = this.getGameState();
+        if (this.framesStalled > 31 - this.level) {
+            this.framesStalled = 0;
+            if (this.currentPiece) {
+                if (this.currentPiece.canMoveDown(prevBoard)) {
+                    this.currentPiece.y++;
+                    if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
+                        this.currentPiece.x++;
+                        this.keysStatus.right--;
+                    } else {
+                        this.keysStatus.right = 0;
+                    }
+                    if (this.keysStatus.left && this.currentPiece && this.currentPiece.canMoveLeft(prevBoard)) {
+                        this.currentPiece.x--;
+                        this.keysStatus.left--;
+                    } else {
+                        this.keysStatus.left = 0;
+                    }
+                    if (this.keysStatus.down && this.currentPiece && this.currentPiece.canMoveDown(prevBoard)) {
+                        this.currentPiece.y++;
+                        this.keysStatus.down--;
+                    } else {
+                        this.keysStatus.down = 0;
+                    }
+                } else {
+                    this.currentPiece.supported = true;
+                    this.currentPiece = null;
+                }
             } else {
-                this.currentPiece.supported = true;
-                this.currentPiece = null;
+                this.currentPiece = this.nextPiece;
+                this.pieces.push(this.currentPiece);
+                this.nextPiece = this.getNextPiece();
             }
+            this.redrawState();
         } else {
-            this.currentPiece = this.nextPiece;
-            this.pieces.push(this.currentPiece);
-            this.nextPiece = this.getNextPiece();
+            this.framesStalled++;
+            if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
+                this.currentPiece.x++;
+                this.keysStatus.right--;
+            }
+            if (this.keysStatus.left && this.currentPiece && this.currentPiece.canMoveLeft(prevBoard)) {
+                this.currentPiece.x--;
+                this.keysStatus.left--;
+            }
+            if (this.keysStatus.down && this.currentPiece && this.currentPiece.canMoveDown(prevBoard)) {
+                this.currentPiece.y++;
+                this.keysStatus.down--;
+            }
+            this.redrawState();
         }
+    }
+
+    redrawState() {
         const board = this.getEmptyBoard();
         this.pieces.forEach(piece => {
             piece.cells.forEach(cell => {
-                if (piece.y + cell.y >= 0) {
-                    board[piece.y + cell.y][piece.x + cell.x] = cell;
+                const y = piece.y + cell.y;
+                const x = piece.x + cell.x;
+                if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
+                    board[y][x] = cell;
                 }
             })
         })
@@ -86,22 +119,22 @@ export default class Tetris extends VideoGame {
         // this.mapPieceToBoard(piece)
     }
 
-    mapPieceToBoard(piece) {
-        // const board = this.getEmptyBoard();
-        const board = this.getEmptyBoard();
-        const oldBoard = this.getGameState();
+    // mapPieceToBoard(piece) {
+    //     // const board = this.getEmptyBoard();
+    //     const board = this.getEmptyBoard();
+    //     const oldBoard = this.getGameState();
 
-        // this keeps old board state
-        for (let y = 0; y < 20; y++) {
-            for (let x = 0; x < 10; x++) {
-                board[y][x] = oldBoard[y][x]
-            }
-        }
+    //     // this keeps old board state
+    //     for (let y = 0; y < 20; y++) {
+    //         for (let x = 0; x < 10; x++) {
+    //             board[y][x] = oldBoard[y][x]
+    //         }
+    //     }
 
-        // console.log(board)
-        piece.cells.forEach(cell => {
-            board[piece.y + cell.y][piece.x + cell.x] = cell;
-        })
-        this.setGameState(board);
-    }
+    //     // console.log(board)
+    //     piece.cells.forEach(cell => {
+    //         board[piece.y + cell.y][piece.x + cell.x] = cell;
+    //     })
+    //     this.setGameState(board);
+    // }
 }
