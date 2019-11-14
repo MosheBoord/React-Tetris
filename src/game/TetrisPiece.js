@@ -5,7 +5,7 @@ export default class TetrisPiece {
         // this.x = Math.floor(Math.random() * 6) + 1;//5;
         // this.y = Math.floor(Math.random() * 16) + 1;//5;
         this.x = 3;
-        this.y = -4;
+        this.y = -3;
         if (config.type === TetrisPiece.RANDOM) {
             config.type = Math.floor(Math.random() * 7);
         }
@@ -15,6 +15,7 @@ export default class TetrisPiece {
                 this.cells[1] = { x: 1, y: 1, color: TetrisPiece.Blue, isEmpty: false }
                 this.cells[2] = { x: 1, y: 2, color: TetrisPiece.Blue, isEmpty: false }
                 this.cells[3] = { x: 1, y: 3, color: TetrisPiece.Blue, isEmpty: false }
+                this.y = -4;
                 break;
             case TetrisPiece.O:
                 this.cells[0] = { x: 1, y: 1, color: TetrisPiece.Yellow, isEmpty: false }

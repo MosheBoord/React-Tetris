@@ -22,7 +22,7 @@ tetris.subscribeToGameState(store, boardUpdate)
 
 tetris.runNextFrame();
 
-setInterval(() => tetris.runNextFrame(), 500);
+setInterval(() => tetris.runNextFrame(), 100);
 
 
 // If you want your app to work offline and load faster, you can change

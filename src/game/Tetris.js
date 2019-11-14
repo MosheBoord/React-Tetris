@@ -1,6 +1,7 @@
 
 import VideoGame from "./VideoGame";
 import TetrisPiece from "./TetrisPiece";
+import KeyEvent from "./KeyEvent";
 
 export default class Tetris extends VideoGame {
     constructor() {
@@ -10,6 +11,33 @@ export default class Tetris extends VideoGame {
         this.nextPiece = this.getNextPiece();
         this.currentPiece = this.getNextPiece();
         this.pieces = [this.currentPiece];
+        this.keysStatus = { right: 0, left: 0 };
+        document.addEventListener("keydown", this.keyPressed.bind(this));
+        document.addEventListener("keyup", this.keyReleased.bind(this))
+    }
+
+    keyPressed(event) {
+        switch (event.keyCode) {
+            case KeyEvent.DOM_VK_RIGHT:
+                this.keysStatus.right = 1;
+                break;
+            case KeyEvent.DOM_VK_LEFT:
+                this.keysStatus.left = 1;
+                break;
+            default:
+        }
+    }
+
+    keyReleased(event) {
+        switch (event.keyCode) {
+            case KeyEvent.DOM_VK_RIGHT:
+                this.keysStatus.right = 0;
+                break;
+            case KeyEvent.DOM_VK_LEFT:
+                this.keysStatus.left = 0;
+                break;
+            default:
+        }
     }
 
     getEmptyBoard() {
@@ -29,6 +57,7 @@ export default class Tetris extends VideoGame {
         if (this.currentPiece) {
             if (this.currentPiece.canMoveDown(prevBoard)) {
                 this.currentPiece.y++;
+                this.currentPiece.x += this.keysStatus.right - this.keysStatus.left;
             } else {
                 this.currentPiece.supported = true;
                 this.currentPiece = null;
