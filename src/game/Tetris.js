@@ -8,6 +8,8 @@ export default class Tetris extends VideoGame {
         this.state = this.getEmptyBoard();
         this.currentPiece = null;
         this.nextPiece = this.getNextPiece();
+        this.currentPiece = this.getNextPiece();
+        this.pieces = [this.currentPiece];
     }
 
     getEmptyBoard() {
@@ -23,22 +25,51 @@ export default class Tetris extends VideoGame {
     }
 
     runNextFrame() {
+        let prevBoard = this.getGameState();
         if (this.currentPiece) {
-
+            if (this.currentPiece.canMoveDown(prevBoard)) {
+                this.currentPiece.y++;
+            } else {
+                this.currentPiece.supported = true;
+                this.currentPiece = null;
+            }
         } else {
             this.currentPiece = this.nextPiece;
+            this.pieces.push(this.currentPiece);
             this.nextPiece = this.getNextPiece();
         }
+        const board = this.getEmptyBoard();
+        this.pieces.forEach(piece => {
+            piece.cells.forEach(cell => {
+                if (piece.y + cell.y >= 0) {
+                    board[piece.y + cell.y][piece.x + cell.x] = cell;
+                }
+            })
+        })
+        this.setGameState(board);
     }
 
     getNextPiece() {
         const piece = new TetrisPiece({ type: TetrisPiece.RANDOM });
+
+        return piece;
         // const piece = new TetrisPiece({ type: TetrisPiece.Z });
-        this.mapPieceToBoard(piece)
+        // this.mapPieceToBoard(piece)
     }
 
     mapPieceToBoard(piece) {
+        // const board = this.getEmptyBoard();
         const board = this.getEmptyBoard();
+        const oldBoard = this.getGameState();
+
+        // this keeps old board state
+        for (let y = 0; y < 20; y++) {
+            for (let x = 0; x < 10; x++) {
+                board[y][x] = oldBoard[y][x]
+            }
+        }
+
+        // console.log(board)
         piece.cells.forEach(cell => {
             board[piece.y + cell.y][piece.x + cell.x] = cell;
         })

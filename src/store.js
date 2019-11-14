@@ -7,7 +7,7 @@ const logger = createLogger({
         // return ![ACTION_TYPE_ONE, ACTION_TYPE_TWO, ...].includes(action.type);
 
         // Return false if you don't want to log anything.
-        return true;
+        return false;
     }
 });
 
