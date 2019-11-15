@@ -60,16 +60,6 @@ export default class TetrisPiece {
             cell.piece = this;
         })
     }
-    /**
-     * Rotates the piece 90, 180, or 270 degrees.
-     *
-     * @param degrees {Integer} a number 1,2,3 rotating the piece 90, 180, 270 degrees repectively.
-     */
-    rotate(degrees) {
-        // this.cells.forEach(cell => {
-        //     cell.
-        // });
-    }
 
     canMoveDown(board) {
         let flag = true;
@@ -123,6 +113,46 @@ export default class TetrisPiece {
             }
         })
         return flag;
+    }
+
+    canRotateClockwise(board) {
+        let flag = true;
+        this.cells.forEach(cell => {
+            try {
+                const y = this.x;
+                const x = 3 - this.y;
+                if (!board[y] || !board[y][x] || !board[y][x].isEmpty || board[y][x].piece === this) {
+                    flag = false;
+                }
+            } catch (error) {
+
+            }
+        })
+        return flag;
+    }
+
+    canRotateCounterClockwise(board) {
+        let flag = true;
+        this.cells.forEach(cell => {
+            try {
+                const y = 3 - this.x;
+                const x = this.y;
+                if (!board[y] || !board[y][x] || !board[y][x].isEmpty || board[y][x].piece === this) {
+                    flag = false;
+                }
+            } catch (error) {
+
+            }
+        })
+        return flag;
+    }
+
+    removeCell(cellToBeRemoved) {
+        this.cells.forEach((cell, index) => {
+            if (cellToBeRemoved === cell) {
+                this.cells.splice(index, 1);
+            }
+        })
     }
 
     rotateClockwise() {
