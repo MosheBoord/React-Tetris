@@ -13,9 +13,10 @@ export default class Tetris extends VideoGame {
         this.pieces = [this.currentPiece];
         this.keysStatus = { right: 0, left: 0, down: 0, rotateClockwise: 0, rotateCounterClockwise: 0 };
         document.addEventListener("keydown", this.keyPressed.bind(this));
-        this.level = 25;
+        this.level = 1;
         this.framesStalled = 0;
         this.rowsCompleted = [];
+        this.clearedRows = 0;
     }
 
     keyPressed(event) {
@@ -181,23 +182,35 @@ export default class Tetris extends VideoGame {
 
     checkForCompletedRows(piece) {
         const board = this.getGameState();
-        piece.cells.forEach(cell => {
-            if (!this.rowsCompleted.includes(piece.y + cell.y) && board[piece.y + cell.y]) {
-                if (!board[piece.y + cell.y].filter(boardCell => boardCell.isEmpty).length) {
-                    this.rowsCompleted.push(piece.y + cell.y);
+        // piece.cells.forEach(cell => {
+        //     if (!this.rowsCompleted.includes(piece.y + cell.y) && board[piece.y + cell.y]) {
+        //         if (!board[piece.y + cell.y].filter(boardCell => boardCell.isEmpty).length) {
+        //             this.rowsCompleted.push(piece.y + cell.y);
+        //         }
+        //     }
+        // })
+        // this.rowsCompleted.sort((a, b) => a < b);
+        for (let y = 0; y < 20; y++) {
+            let rowIsFull = true;
+            for (let x = 0; x < 10; x++) {
+                if (board[y][x].isEmpty) {
+                    rowIsFull = false;
+                    break;
                 }
             }
-        })
-        this.rowsCompleted.sort((a, b) => a < b);
+            if (rowIsFull) {
+                this.rowsCompleted.push(y);
+            }
+        }
     }
 
     deleteRows() {
         const board = this.getGameState();
-        let removed = 0;
         while (this.rowsCompleted.length) {
             // board.splice(this.rowsCompleted.shift() - removed, 1);
             board.splice(this.rowsCompleted.shift(), 1);
-            removed++;
+            this.clearedRows++;
+            this.level++;
             const row = [];
             for (let x = 0; x < 10; x++) {
                 row.push({ isEmpty: true })
