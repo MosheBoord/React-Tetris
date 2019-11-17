@@ -11,7 +11,7 @@ export default class Tetris extends VideoGame {
         this.nextPiece = this.getNextPiece();
         this.currentPiece = this.getNextPiece();
         this.pieces = [this.currentPiece];
-        this.keysStatus = { right: 0, left: 0, down: 0, rotateClockwise: 0, rotateCounterClockwise: 0 };
+        this.keysStatus = { right: 0, left: 0, down: 0, up: 0, rotateClockwise: 0, rotateCounterClockwise: 0, };
         document.addEventListener("keydown", this.keyPressed.bind(this));
         this.level = 1;
         this.framesStalled = 0;
@@ -29,6 +29,9 @@ export default class Tetris extends VideoGame {
                 break;
             case KeyEvent.DOM_VK_DOWN:
                 this.keysStatus.down++;
+                break;
+            case KeyEvent.DOM_VK_UP:
+                this.keysStatus.up++;
                 break;
             case KeyEvent.DOM_VK_X:
                 this.keysStatus.rotateClockwise++;
@@ -105,8 +108,20 @@ export default class Tetris extends VideoGame {
         if (this.keysStatus.down && this.currentPiece && this.currentPiece.canMoveDown(prevBoard)) {
             this.currentPiece.y++;
             this.keysStatus.down--;
+            this.keysStatus.up = 0;
         } else {
             this.keysStatus.down = 0;
+        }
+
+        if (this.keysStatus.up > 1 && this.currentPiece) {
+            while (this.currentPiece.canMoveDown(prevBoard)) {
+                this.currentPiece.y++;
+
+            }
+        } else {
+            if (this.keysStatus.up !== 1) {
+                this.keysStatus.up = 0;
+            }
         }
 
         // still need to check if rotation is legal
