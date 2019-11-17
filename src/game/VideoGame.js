@@ -1,3 +1,4 @@
+import KeyEvent from "./KeyEvent";
 
 export default class VideoGame {
     constructor() {
@@ -31,6 +32,60 @@ export default class VideoGame {
         }
 
         main(); // Start the cycle
+        let gameEngine = this;
+
+        // The following code should not remain in the final version of VieoGame
+        // It is only here for Tetris.
+
+        window.addEventListener("gamepadconnected", function (e) {
+            this.gamepadConnected = true;
+            console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+                e.gamepad.index, e.gamepad.id,
+                e.gamepad.buttons.length, e.gamepad.axes.length);
+            setInterval(() => {
+                // if (e.gamepad.) 
+                // var event = Window.trigger('keypress', { which: 'A'.charCodeAt(0) });
+                // event.which = KeyEvent; // Character 'A'
+
+                let gp = navigator.getGamepads()[0];
+
+                if (gp.buttons[4].pressed) {
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_Z, true);
+                }
+
+                if (gp.buttons[5].pressed) {
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_X, true);
+                }
+
+                if (gp.buttons[12].pressed) {
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_UP, true);
+                }
+
+                if (gp.buttons[13].pressed) {
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_DOWN, true);
+                }
+
+                if (gp.buttons[14].pressed) {
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_LEFT, true);
+                }
+
+                if (gp.buttons[15].pressed) {
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_RIGHT, true);
+                }
+
+                gp.buttons.forEach((button, index) => {
+                    if (button.pressed) {
+                        console.log(index)
+                    }
+                })
+
+
+            }, 100)
+        });
+    }
+
+    setKeyStatus(keyCode, boolean) {
+
     }
 
     pause() {

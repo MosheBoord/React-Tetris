@@ -17,6 +17,13 @@ export default class Tetris extends VideoGame {
         this.framesStalled = 0;
         this.rowsCompleted = [];
         this.clearedRows = 0;
+
+    }
+
+    setKeyStatus(keyCode, boolean) {
+        if (boolean) {
+            this.keyPressed({ keyCode })
+        }
     }
 
     keyPressed(event) {
@@ -128,15 +135,20 @@ export default class Tetris extends VideoGame {
 
         // if (this.keysStatus.rotateClockwise && this.currentPiece && this.currentPiece.canRotateClockwise(prevBoard)) {
         if (this.keysStatus.rotateClockwise && this.currentPiece) {//&& this.currentPiece.canRotateClockwise(prevBoard)) {
+            // if (this.gamepadConnected && this.rotateClockwise > 1) {
             this.currentPiece.rotateClockwise();
-            this.keysStatus.rotateClockwise--;
+            this.keysStatus.rotateClockwise = 0;
+            // }
+
         } else {
             this.keysStatus.rotateClockwise = 0;
         }
 
         if (this.keysStatus.rotateCounterClockwise && this.currentPiece) {//&& this.currentPiece.canRotateCounterClockwise(prevBoard)) {
+            // if (this.gamepadConnected && this.rotateCounterClockwise > 1) {
             this.currentPiece.rotateCounterClockwise();
-            this.keysStatus.rotateCounterClockwise--;
+            this.keysStatus.rotateCounterClockwise = 0;
+            // }
         } else {
             this.keysStatus.rotateCounterClockwise = 0;
         }

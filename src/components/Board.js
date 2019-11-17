@@ -15,8 +15,8 @@ const Board = props => {
             margin: "10px",
             background: "black",
         }}>
-            <iframe style={{ visibility: "hidden", display: "none" }} width="640" height="480" src="https://www.youtube.com/embed/9Fv5cuYZFC0?start=1&autoplay=1" frameborder="0"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe style={{ visibility: "hidden", display: "none" }} width="640" height="480" src="https://www.youtube.com/embed/9Fv5cuYZFC0?start=1&autoplay=1"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"></iframe>
             {board.map(row => {
                 return (
                     <>
