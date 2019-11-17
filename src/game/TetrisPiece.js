@@ -59,6 +59,7 @@ export default class TetrisPiece {
         this.cells.forEach(cell => {
             cell.piece = this;
         })
+        this.type = config.type;
     }
 
     canMoveDown(board) {

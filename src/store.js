@@ -1,13 +1,16 @@
 import { createStore, applyMiddleware } from "redux";
 import { createLogger } from "redux-logger";
 
+import TetrisPiece from "./game/TetrisPiece";
+
 const logger = createLogger({
     predicate: (getState, action) => {
         // Use the next line to disable specific actions from being logged.
         // return ![ACTION_TYPE_ONE, ACTION_TYPE_TWO, ...].includes(action.type);
+        return ![BOARD_UPDATE, SCORE, NEXT_PIECE].includes(action.type);
 
         // Return false if you don't want to log anything.
-        return false;
+        // return false;
     }
 });
 
@@ -16,12 +19,23 @@ const logger = createLogger({
 // This action takes place whenever the game decides to update the board.
 const BOARD_UPDATE = "BOARD_UPDATE";
 
+const NEXT_PIECE = "NEXT_PIECE";
+
+const ROWS_CLEARED = "ROWS_CLEARED";
+
+const SCORE = "SCORE";
+
 //ACTION CREATORS
 
 export const boardUpdate = (tetrisBoard) => ({
     type: BOARD_UPDATE,
     tetrisBoard,
 });
+
+export const nextPieceDispatcher = (nextPiece) => ({
+    type: NEXT_PIECE,
+    nextPiece
+})
 
 // setting up an initial chessboard state
 const tetrisBoard = [];
@@ -42,6 +56,9 @@ for (let y = 0; y < 20; y++) {
 // setting up initial redux state
 const initialState = {
     tetrisBoard,
+    nextPiece: { type: TetrisPiece.I, cells: [] },
+    score: 0,
+    rowsCleared: 0,
 };
 
 
@@ -53,6 +70,21 @@ const reducer = (prevState = initialState, action) => {
             return {
                 ...prevState,
                 tetrisBoard: action.tetrisBoard,
+            };
+        case NEXT_PIECE:
+            return {
+                ...prevState,
+                nextPiece: action.nextPiece,
+            };
+        case ROWS_CLEARED:
+            return {
+                ...prevState,
+                rowsCleared: action.rowsCleared,
+            };
+        case SCORE:
+            return {
+                ...prevState,
+                score: action.score,
             };
         default:
             return prevState;
