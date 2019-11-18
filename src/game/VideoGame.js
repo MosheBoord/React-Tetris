@@ -103,7 +103,6 @@ export default class VideoGame {
 
     stop() {
         clearInterval(this.gameLoop);
-        window.cancelAnimationFrame(this.stopMain);
     }
 
     runNextFrame() {

@@ -3,7 +3,6 @@ import * as serviceWorker from "./serviceWorker";
 import React from "react";
 import ReactDOM from "react-dom";
 import Board from "./components/Board";
-import OptionsPanel from "./components/OptionsPanel"
 import { Provider } from "react-redux";
 import store, { boardUpdate } from "./store";
 import "./App.css";
@@ -12,16 +11,8 @@ import Tetris from "./game/Tetris";
 ReactDOM.render(
     (
         <Provider store={store}>
-            <div style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center"
-            }}>
-                <Board />
-                <OptionsPanel />
-            </div>
-        </Provider >
+            <Board />
+        </Provider>
     )
     , document.getElementById("root")
 );

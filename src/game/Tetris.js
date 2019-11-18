@@ -3,9 +3,6 @@ import VideoGame from "./VideoGame";
 import TetrisPiece from "./TetrisPiece";
 import KeyEvent from "./KeyEvent";
 
-//the following is bad code, done quickly to get it working, but should be redone to have entire state change to update store.
-import nextPieceDispatcher from "../store"
-
 export default class Tetris extends VideoGame {
     constructor() {
         super();
@@ -20,7 +17,7 @@ export default class Tetris extends VideoGame {
         this.framesStalled = 0;
         this.rowsCompleted = [];
         this.clearedRows = 0;
-        this.score = 0;
+
     }
 
     setKeyStatus(keyCode, boolean) {
@@ -66,7 +63,6 @@ export default class Tetris extends VideoGame {
     }
 
     runNextFrame() {
-        this.store.dispatch({ type: "NEXT_PIECE", nextPiece: this.nextPiece });
         if (!this.rowsCompleted.length) {
             const prevBoard = this.getGameState();
             if (this.framesStalled > 31 - this.level) {
@@ -79,11 +75,6 @@ export default class Tetris extends VideoGame {
                         this.calculateKeyMovements();
                     } else {
                         this.currentPiece.supported = true;
-                        if (this.currentPiece.y < -2) {
-                            this.stop();
-                        }
-                        this.score += this.level;
-                        this.store.dispatch({ type: "SCORE", score: this.score })
                         this.checkForCompletedRows(this.currentPiece);
                         this.currentPiece = null;
                     }
@@ -91,8 +82,6 @@ export default class Tetris extends VideoGame {
                     this.currentPiece = this.nextPiece;
                     this.pieces.push(this.currentPiece);
                     this.nextPiece = this.getNextPiece();
-                    // this is not clean, need to rework system for easy state manipulation.
-
                 }
                 this.redrawState();
             } else {
@@ -244,14 +233,11 @@ export default class Tetris extends VideoGame {
 
     deleteRows() {
         const board = this.getGameState();
-        this.score += this.rowsCompleted.length * this.rowsCompleted.length * this.level;
-        this.store.dispatch({ type: "SCORE", score: this.score })
         while (this.rowsCompleted.length) {
             // board.splice(this.rowsCompleted.shift() - removed, 1);
             board.splice(this.rowsCompleted.shift(), 1);
             this.clearedRows++;
             this.level++;
-            this.store.dispatch({ type: "ROWS_CLEARED", rowsCleared: this.clearedRows })
             const row = [];
             for (let x = 0; x < 10; x++) {
                 row.push({ isEmpty: true })
