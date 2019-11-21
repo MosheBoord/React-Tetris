@@ -4,6 +4,7 @@ export default class VideoGame {
     constructor() {
         this.frame = 1;
         this.loopCount = 0;
+        this.state = {};
     }
 
     setFrameRate(rate) {
@@ -105,10 +106,12 @@ export default class VideoGame {
     }
 
     setGameState(state) {
-        this.state = state;
-        if (this.store && this.dispatcher) {
-            this.store.dispatch(this.dispatcher(state));
-        }
+        Object.keys(state).forEach(key => {
+            this.state[key] = state[key];
+            if (this.store && this.dispatcher) {
+                this.store.dispatch(this.dispatcher[key](state[key]));
+            }
+        })
     }
 
     getGameState() {

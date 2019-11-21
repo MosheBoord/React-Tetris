@@ -29,7 +29,7 @@ ReactDOM.render(
 const tetris = new Tetris();
 tetris.subscribeToGameState(store, { tetrisBoard: boardUpdate })
 
-tetris.setFrameRate(1000 / 1);
+// tetris.setFrameRate(1000 / 1);
 
 tetris.run();
 

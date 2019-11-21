@@ -9,7 +9,7 @@ import nextPieceDispatcher from "../store"
 export default class Tetris extends VideoGame {
     constructor() {
         super();
-        this.state = { tetrisBoard: this.getEmptyBoard() };
+        this.state = this.getEmptyBoard();
         this.currentPiece = null;
         this.nextPiece = this.getNextPiece();
         this.currentPiece = this.getNextPiece();
@@ -68,7 +68,7 @@ export default class Tetris extends VideoGame {
     runNextFrame() {
         this.store.dispatch({ type: "NEXT_PIECE", nextPiece: this.nextPiece });
         if (!this.rowsCompleted.length) {
-            const prevBoard = this.getGameState().tetrisBoard;
+            const prevBoard = this.getGameState();
             if (this.framesStalled > 31 - this.level) {
                 this.framesStalled = 0;
                 if (this.currentPiece) {
@@ -107,7 +107,7 @@ export default class Tetris extends VideoGame {
     }
 
     calculateKeyMovements() {
-        const prevBoard = this.getGameState().tetrisBoard;
+        const prevBoard = this.getGameState();
 
         if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
             this.currentPiece.x++;
@@ -145,7 +145,7 @@ export default class Tetris extends VideoGame {
         // still need to check if rotation is legal
 
         // if (this.keysStatus.rotateClockwise && this.currentPiece && this.currentPiece.canRotateClockwise(prevBoard)) {
-        if (this.keysStatus.rotateClockwise && this.currentPiece && this.currentPiece.canRotateClockwise(prevBoard)) {
+        if (this.keysStatus.rotateClockwise && this.currentPiece) {//&& this.currentPiece.canRotateClockwise(prevBoard)) {
             // if (this.gamepadConnected && this.rotateClockwise > 1) {
             this.currentPiece.rotateClockwise();
             this.keysStatus.rotateClockwise = 0;
@@ -155,7 +155,7 @@ export default class Tetris extends VideoGame {
             this.keysStatus.rotateClockwise = 0;
         }
 
-        if (this.keysStatus.rotateCounterClockwise && this.currentPiece && this.currentPiece.canRotateCounterClockwise(prevBoard)) {
+        if (this.keysStatus.rotateCounterClockwise && this.currentPiece) {//&& this.currentPiece.canRotateCounterClockwise(prevBoard)) {
             // if (this.gamepadConnected && this.rotateCounterClockwise > 1) {
             this.currentPiece.rotateCounterClockwise();
             this.keysStatus.rotateCounterClockwise = 0;
@@ -166,7 +166,7 @@ export default class Tetris extends VideoGame {
     }
 
     removeCurrentPieceFromState() {
-        const board = this.getGameState().tetrisBoard;
+        const board = this.getGameState();
         if (this.currentPiece) {
             for (let y = 0; y < 20; y++) {
                 for (let x = 0; x < 10; x++) {
@@ -181,8 +181,16 @@ export default class Tetris extends VideoGame {
     redrawState() {
         this.removeCurrentPieceFromState();
         const board = this.getEmptyBoard();
-        const oldBoard = this.getGameState().tetrisBoard;
-
+        const oldBoard = this.getGameState();
+        // this.pieces.forEach(piece => {
+        //     piece.cells.forEach(cell => {
+        //         const y = piece.y + cell.y;
+        //         const x = piece.x + cell.x;
+        //         if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
+        //             board[y][x] = cell;
+        //         }
+        //     })
+        // })
         for (let y = 0; y < 20; y++) {
             for (let x = 0; x < 10; x++) {
                 board[y][x] = oldBoard[y][x]
@@ -204,12 +212,11 @@ export default class Tetris extends VideoGame {
 
     getNextPiece() {
         const piece = new TetrisPiece({ type: TetrisPiece.RANDOM });
-
         return piece;
     }
 
     checkForCompletedRows(piece) {
-        const board = this.getGameState().tetrisBoard;
+        const board = this.getGameState();
         for (let y = 0; y < 20; y++) {
             let rowIsFull = true;
             for (let x = 0; x < 10; x++) {
@@ -225,7 +232,7 @@ export default class Tetris extends VideoGame {
     }
 
     deleteRows() {
-        const board = this.getGameState().tetrisBoard;
+        const board = this.getGameState();
         this.score += this.rowsCompleted.length * this.rowsCompleted.length * this.level;
         this.store.dispatch({ type: "SCORE", score: this.score })
         while (this.rowsCompleted.length) {

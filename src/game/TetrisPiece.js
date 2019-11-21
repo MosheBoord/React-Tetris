@@ -7,6 +7,8 @@ export default class TetrisPiece {
         this.x = 3;
         this.y = -3;
         // this.y = 5;
+
+        this.length = 3;
         if (config.type === TetrisPiece.RANDOM) {
             config.type = Math.floor(Math.random() * 7);
         }
@@ -17,18 +19,20 @@ export default class TetrisPiece {
                 this.cells[2] = { x: 1, y: 2, color: TetrisPiece.Blue, isEmpty: false }
                 this.cells[3] = { x: 1, y: 3, color: TetrisPiece.Blue, isEmpty: false }
                 this.y = -4;
+                this.length = 4;
                 break;
             case TetrisPiece.O:
                 this.cells[0] = { x: 1, y: 1, color: TetrisPiece.Yellow, isEmpty: false }
                 this.cells[1] = { x: 1, y: 2, color: TetrisPiece.Yellow, isEmpty: false }
                 this.cells[2] = { x: 2, y: 1, color: TetrisPiece.Yellow, isEmpty: false }
                 this.cells[3] = { x: 2, y: 2, color: TetrisPiece.Yellow, isEmpty: false }
+                this.length = 4;
                 break;
             case TetrisPiece.J:
-                this.cells[0] = { x: 2, y: 0, color: TetrisPiece.Purple, isEmpty: false }
-                this.cells[1] = { x: 2, y: 1, color: TetrisPiece.Purple, isEmpty: false }
-                this.cells[2] = { x: 2, y: 2, color: TetrisPiece.Purple, isEmpty: false }
-                this.cells[3] = { x: 1, y: 2, color: TetrisPiece.Purple, isEmpty: false }
+                this.cells[0] = { x: 1, y: 0, color: TetrisPiece.Purple, isEmpty: false }
+                this.cells[1] = { x: 1, y: 1, color: TetrisPiece.Purple, isEmpty: false }
+                this.cells[2] = { x: 1, y: 2, color: TetrisPiece.Purple, isEmpty: false }
+                this.cells[3] = { x: 0, y: 2, color: TetrisPiece.Purple, isEmpty: false }
                 break;
             case TetrisPiece.T:
                 this.cells[0] = { x: 0, y: 1, color: TetrisPiece.Orange, isEmpty: false }
@@ -43,16 +47,16 @@ export default class TetrisPiece {
                 this.cells[3] = { x: 2, y: 2, color: TetrisPiece.Green, isEmpty: false }
                 break;
             case TetrisPiece.S:
-                this.cells[0] = { x: 1, y: 1, color: TetrisPiece.LightBlue, isEmpty: false }
-                this.cells[1] = { x: 2, y: 1, color: TetrisPiece.LightBlue, isEmpty: false }
-                this.cells[2] = { x: 0, y: 2, color: TetrisPiece.LightBlue, isEmpty: false }
-                this.cells[3] = { x: 1, y: 2, color: TetrisPiece.LightBlue, isEmpty: false }
+                this.cells[0] = { x: 1, y: 0, color: TetrisPiece.LightBlue, isEmpty: false }
+                this.cells[1] = { x: 2, y: 0, color: TetrisPiece.LightBlue, isEmpty: false }
+                this.cells[2] = { x: 0, y: 1, color: TetrisPiece.LightBlue, isEmpty: false }
+                this.cells[3] = { x: 1, y: 1, color: TetrisPiece.LightBlue, isEmpty: false }
                 break;
             case TetrisPiece.Z:
-                this.cells[0] = { x: 0, y: 1, color: TetrisPiece.Red, isEmpty: false }
-                this.cells[1] = { x: 1, y: 1, color: TetrisPiece.Red, isEmpty: false }
-                this.cells[2] = { x: 1, y: 2, color: TetrisPiece.Red, isEmpty: false }
-                this.cells[3] = { x: 2, y: 2, color: TetrisPiece.Red, isEmpty: false }
+                this.cells[0] = { x: 0, y: 0, color: TetrisPiece.Red, isEmpty: false }
+                this.cells[1] = { x: 1, y: 0, color: TetrisPiece.Red, isEmpty: false }
+                this.cells[2] = { x: 1, y: 1, color: TetrisPiece.Red, isEmpty: false }
+                this.cells[3] = { x: 2, y: 1, color: TetrisPiece.Red, isEmpty: false }
                 break;
             default:
         }
@@ -120,9 +124,10 @@ export default class TetrisPiece {
         let flag = true;
         this.cells.forEach(cell => {
             try {
-                const y = this.x;
-                const x = 3 - this.y;
-                if (!board[y] || !board[y][x] || !board[y][x].isEmpty || board[y][x].piece === this) {
+                const y = cell.x + this.y;
+                const x = (this.length - 1) - cell.y + this.x;
+                // console.log(board)
+                if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
                     flag = false;
                 }
             } catch (error) {
@@ -136,9 +141,9 @@ export default class TetrisPiece {
         let flag = true;
         this.cells.forEach(cell => {
             try {
-                const y = 3 - this.x;
-                const x = this.y;
-                if (!board[y] || !board[y][x] || !board[y][x].isEmpty || board[y][x].piece === this) {
+                const y = (this.length - 1) - cell.x + this.y;
+                const x = cell.y + this.x;
+                if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
                     flag = false;
                 }
             } catch (error) {
@@ -160,7 +165,7 @@ export default class TetrisPiece {
         this.cells.forEach(cell => {
             const x = cell.x;
             const y = cell.y;
-            cell.x = 3 - y;
+            cell.x = (this.length - 1) - y;
             cell.y = x;
         })
     }
@@ -170,7 +175,7 @@ export default class TetrisPiece {
             const x = cell.x;
             const y = cell.y;
             cell.x = y;
-            cell.y = 3 - x;
+            cell.y = (this.length - 1) - x;
         })
     }
 }
