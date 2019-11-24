@@ -4,7 +4,7 @@ export default class TetrisPiece {
         this.cells = [];
         // this.x = Math.floor(Math.random() * 6) + 1;//5;
         // this.y = Math.floor(Math.random() * 16) + 1;//5;
-        this.x = 3;
+        this.x = 4;
         this.y = -3;
         // this.y = 5;
 

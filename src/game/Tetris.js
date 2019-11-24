@@ -9,10 +9,14 @@ import nextPieceDispatcher from "../store"
 export default class Tetris extends VideoGame {
     constructor() {
         super();
-        this.state = { tetrisBoard: this.getEmptyBoard() };
-        this.currentPiece = null;
+        this.state = {
+            tetrisBoard: this.getEmptyBoard(),
+            physicalBoard: this.getEmptyBoard(),
+            visualBoard: this.getEmptyBoard()
+        };
         this.nextPiece = this.getNextPiece();
         this.currentPiece = this.getNextPiece();
+        this.ghostPiece = this.getNextPiece(this.currentPiece.type);
         this.pieces = [this.currentPiece];
         this.keysStatus = { right: 0, left: 0, down: 0, up: 0, rotateClockwise: 0, rotateCounterClockwise: 0, };
         document.addEventListener("keydown", this.keyPressed.bind(this));
@@ -68,7 +72,8 @@ export default class Tetris extends VideoGame {
     runNextFrame() {
         this.store.dispatch({ type: "NEXT_PIECE", nextPiece: this.nextPiece });
         if (!this.rowsCompleted.length) {
-            const prevBoard = this.getGameState().tetrisBoard;
+            // this.removeVisualPiecesFromState();
+            const prevBoard = this.getGameState().physicalBoard;
             if (this.framesStalled > 31 - this.level) {
                 this.framesStalled = 0;
                 if (this.currentPiece) {
@@ -79,16 +84,22 @@ export default class Tetris extends VideoGame {
                         this.calculateKeyMovements();
                     } else {
                         this.currentPiece.supported = true;
+                        this.drawToPhysicalBoard(this.currentPiece);
                         if (this.currentPiece.y < -2) {
                             this.stop();
                         }
                         this.score += this.level;
                         this.store.dispatch({ type: "SCORE", score: this.score })
                         this.checkForCompletedRows(this.currentPiece);
+                        console.log("what?")
                         this.currentPiece = null;
+                        this.ghostPiece = null;
                     }
+                    this.moveGhostPiece();
                 } else {
                     this.currentPiece = this.nextPiece;
+                    console.log("why?")
+                    this.ghostPiece = this.getNextPiece(this.currentPiece.type);
                     this.pieces.push(this.currentPiece);
                     this.nextPiece = this.getNextPiece();
                     // this is not clean, need to rework system for easy state manipulation.
@@ -107,7 +118,7 @@ export default class Tetris extends VideoGame {
     }
 
     calculateKeyMovements() {
-        const prevBoard = this.getGameState().tetrisBoard;
+        const prevBoard = this.getGameState().physicalBoard;
 
         if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
             this.currentPiece.x++;
@@ -163,30 +174,36 @@ export default class Tetris extends VideoGame {
         } else {
             this.keysStatus.rotateCounterClockwise = 0;
         }
+
+        this.moveGhostPiece();
     }
 
-    removeCurrentPieceFromState() {
-        const board = this.getGameState().tetrisBoard;
-        if (this.currentPiece) {
-            for (let y = 0; y < 20; y++) {
-                for (let x = 0; x < 10; x++) {
-                    if (board[y][x].piece === this.currentPiece) {
-                        board[y][x] = { x, y, isEmpty: true };
-                    }
-                }
+    drawToPhysicalBoard(piece) {
+        const board = this.getGameState().physicalBoard;
+        piece.cells.forEach(cell => {
+            if (piece.y + cell.y > -1) {
+                board[piece.y + cell.y][piece.x + cell.x] = cell;
             }
-        }
+        });
     }
 
     redrawState() {
-        this.removeCurrentPieceFromState();
+        // this.removeVisualPiecesFromState();
         const board = this.getEmptyBoard();
-        const oldBoard = this.getGameState().tetrisBoard;
+        // const oldBoard = this.getGameState().tetrisBoard;
+        const physicalBoard = this.getGameState().physicalBoard;
+        const visualBoard = this.getEmptyBoard();
 
-        for (let y = 0; y < 20; y++) {
-            for (let x = 0; x < 10; x++) {
-                board[y][x] = oldBoard[y][x]
-            }
+        if (this.ghostPiece) {
+            console.log("where?")
+            this.ghostPiece.cells.forEach(cell => {
+                const y = this.ghostPiece.y + cell.y;
+                const x = this.ghostPiece.x + cell.x;
+                if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
+                    visualBoard[y][x] = cell;
+                    console.log(visualBoard[y][x])
+                }
+            })
         }
 
         if (this.currentPiece) {
@@ -194,26 +211,37 @@ export default class Tetris extends VideoGame {
                 const y = this.currentPiece.y + cell.y;
                 const x = this.currentPiece.x + cell.x;
                 if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
-                    board[y][x] = cell;
+                    visualBoard[y][x] = cell;
                 }
             })
+        }
+
+        for (let y = 0; y < 20; y++) {
+            for (let x = 0; x < 10; x++) {
+                if (!physicalBoard[y][x].isEmpty) {
+                    board[y][x] = physicalBoard[y][x];
+                }
+
+                if (!visualBoard[y][x].isEmpty) {
+                    board[y][x] = visualBoard[y][x];
+                }
+            }
         }
 
         this.setGameState({ tetrisBoard: board });
     }
 
-    getNextPiece() {
-        const piece = new TetrisPiece({ type: TetrisPiece.RANDOM });
-
+    getNextPiece(type = TetrisPiece.RANDOM) {
+        const piece = new TetrisPiece({ type });
         return piece;
     }
 
     checkForCompletedRows(piece) {
-        const board = this.getGameState().tetrisBoard;
+        const board = this.getGameState().physicalBoard;
         for (let y = 0; y < 20; y++) {
             let rowIsFull = true;
             for (let x = 0; x < 10; x++) {
-                if (board[y][x].isEmpty) {
+                if (board[y][x].isEmpty || board[y][x].ghostPiece) {
                     rowIsFull = false;
                     break;
                 }
@@ -225,7 +253,7 @@ export default class Tetris extends VideoGame {
     }
 
     deleteRows() {
-        const board = this.getGameState().tetrisBoard;
+        const board = this.getGameState().physicalBoard;
         this.score += this.rowsCompleted.length * this.rowsCompleted.length * this.level;
         this.store.dispatch({ type: "SCORE", score: this.score })
         while (this.rowsCompleted.length) {
@@ -238,6 +266,21 @@ export default class Tetris extends VideoGame {
                 row.push({ isEmpty: true })
             }
             board.unshift(row);
+        }
+    }
+
+    moveGhostPiece() {
+        const prevBoard = this.getGameState().physicalBoard;
+        if (this.ghostPiece) {
+            this.ghostPiece.cells = [];
+            this.ghostPiece.x = this.currentPiece.x;
+            this.ghostPiece.y = this.currentPiece.y;
+            this.currentPiece.cells.forEach(cell => {
+                this.ghostPiece.cells.push({ x: cell.x, y: cell.y, ghostPiece: true, piece: this.ghostPiece, color: cell.color, isEmpty: false })
+            })
+            while (this.ghostPiece.canMoveDown(prevBoard)) {
+                this.ghostPiece.y++;
+            }
         }
     }
 }
