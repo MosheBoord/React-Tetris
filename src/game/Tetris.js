@@ -91,14 +91,12 @@ export default class Tetris extends VideoGame {
                         this.score += this.level;
                         this.store.dispatch({ type: "SCORE", score: this.score })
                         this.checkForCompletedRows(this.currentPiece);
-                        console.log("what?")
                         this.currentPiece = null;
                         this.ghostPiece = null;
                     }
                     this.moveGhostPiece();
                 } else {
                     this.currentPiece = this.nextPiece;
-                    console.log("why?")
                     this.ghostPiece = this.getNextPiece(this.currentPiece.type);
                     this.pieces.push(this.currentPiece);
                     this.nextPiece = this.getNextPiece();
@@ -195,13 +193,11 @@ export default class Tetris extends VideoGame {
         const visualBoard = this.getEmptyBoard();
 
         if (this.ghostPiece) {
-            console.log("where?")
             this.ghostPiece.cells.forEach(cell => {
                 const y = this.ghostPiece.y + cell.y;
                 const x = this.ghostPiece.x + cell.x;
                 if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
                     visualBoard[y][x] = cell;
-                    console.log(visualBoard[y][x])
                 }
             })
         }

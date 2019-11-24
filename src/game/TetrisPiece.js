@@ -126,8 +126,9 @@ export default class TetrisPiece {
             try {
                 const y = cell.x + this.y;
                 const x = (this.length - 1) - cell.y + this.x;
-                // console.log(board)
-                if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
+                if (y < 0) {
+
+                } else if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
                     flag = false;
                 }
             } catch (error) {
@@ -143,7 +144,9 @@ export default class TetrisPiece {
             try {
                 const y = (this.length - 1) - cell.x + this.y;
                 const x = cell.y + this.x;
-                if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
+                if (y < 0) {
+
+                } else if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
                     flag = false;
                 }
             } catch (error) {
