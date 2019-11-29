@@ -66,15 +66,21 @@ export default class TetrisPiece {
         this.type = config.type;
     }
 
-    canMoveDown(board) {
+    setColor(color) {
+        this.cells.forEach(cell => {
+            cell.color = color;
+        })
+    }
+
+    hasLegalPlacement(board) {
         let flag = true;
         this.cells.forEach(cell => {
             try {
                 const y = this.y + cell.y;
                 const x = this.x + cell.x;
-                if (this.y + cell.y > 18) {
+                if (x < 0 || x > 9) {
                     flag = false;
-                } else if (!board[y + 1][x].isEmpty && board[y + 1][x].piece !== this) {
+                } else if (!board[y][x + 1].isEmpty && board[y][x + 1].piece !== this) {
                     flag = false;
                 }
             } catch (error) {
@@ -84,12 +90,31 @@ export default class TetrisPiece {
         return flag;
     }
 
-    canMoveRight(board) {
+    canMoveDown(board) {
         let flag = true;
         this.cells.forEach(cell => {
             try {
                 const y = this.y + cell.y;
                 const x = this.x + cell.x;
+                if (this.y + cell.y > 18) {
+                    flag = false;
+                } else if (!board[y + 1][x].isEmpty && board[y + 1][x].piece !== this) {
+                    console.log(x)
+                    flag = false;
+                }
+            } catch (error) {
+
+            }
+        })
+        return flag;
+    }
+
+    canMoveRight(board, xModifier = 0, yModifier = 0) {
+        let flag = true;
+        this.cells.forEach(cell => {
+            try {
+                const y = this.y + cell.y + yModifier;
+                const x = this.x + cell.x + xModifier;
                 if (x > 8) {
                     flag = false;
                 } else if (!board[y][x + 1].isEmpty && board[y][x + 1].piece !== this) {
@@ -102,12 +127,12 @@ export default class TetrisPiece {
         return flag;
     }
 
-    canMoveLeft(board) {
+    canMoveLeft(board, xModifier = 0, yModifier = 0) {
         let flag = true;
         this.cells.forEach(cell => {
             try {
-                const y = this.y + cell.y;
-                const x = this.x + cell.x;
+                const y = this.y + cell.y + yModifier;
+                const x = this.x + cell.x + xModifier;
                 if (x < 1) {
                     flag = false;
                 } else if (!board[y][x - 1].isEmpty && board[y][x - 1].piece !== this) {
@@ -120,13 +145,13 @@ export default class TetrisPiece {
         return flag;
     }
 
-    canRotateClockwise(board) {
+    canRotateClockwise(board, xModifier = 0, yModifier = 0) {
         let flag = true;
         this.cells.forEach(cell => {
             try {
-                const y = cell.x + this.y;
-                const x = (this.length - 1) - cell.y + this.x;
-                if (y < 0) {
+                const y = cell.x + this.y + yModifier;
+                const x = (this.length - 1) - cell.y + this.x + xModifier;
+                if (y < 0 && x > -1 && x < 10) {
 
                 } else if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
                     flag = false;
@@ -138,15 +163,33 @@ export default class TetrisPiece {
         return flag;
     }
 
-    canRotateCounterClockwise(board) {
+    canRotateCounterClockwise(board, xModifier = 0, yModifier = 0) {
         let flag = true;
         this.cells.forEach(cell => {
             try {
-                const y = (this.length - 1) - cell.x + this.y;
-                const x = cell.y + this.x;
-                if (y < 0) {
+                const y = (this.length - 1) - cell.x + this.y + yModifier;
+                const x = cell.y + this.x + xModifier;
+                if (y < 0 && x > -1 && x < 10) {
 
                 } else if (!board[y] || !board[y][x] || (!board[y][x].isEmpty && board[y][x].piece !== this)) {
+                    flag = false;
+                }
+            } catch (error) {
+
+            }
+        })
+        return flag;
+    }
+
+    canSwap(board, xVaulue, yValue) {
+        let flag = true;
+        this.cells.forEach(cell => {
+            try {
+                const y = cell.y + yValue;
+                const x = cell.x + xVaulue;
+                if (x > 9 || x < 0) {
+                    flag = false;
+                } else if (!board[y][x + 1].isEmpty && board[y][x].piece !== this) {
                     flag = false;
                 }
             } catch (error) {
@@ -164,21 +207,21 @@ export default class TetrisPiece {
         })
     }
 
-    rotateClockwise() {
+    rotateClockwise(xModifier = 0, yModifier = 0) {
         this.cells.forEach(cell => {
             const x = cell.x;
             const y = cell.y;
-            cell.x = (this.length - 1) - y;
-            cell.y = x;
+            cell.x = (this.length - 1) - y + xModifier;
+            cell.y = x + yModifier;
         })
     }
 
-    rotateCounterClockwise() {
+    rotateCounterClockwise(xModifier = 0, yModifier = 0) {
         this.cells.forEach(cell => {
             const x = cell.x;
             const y = cell.y;
-            cell.x = y;
-            cell.y = (this.length - 1) - x;
+            cell.x = y + xModifier;
+            cell.y = (this.length - 1) - x + yModifier;
         })
     }
 }
@@ -199,6 +242,7 @@ TetrisPiece.Yellow = 3;
 TetrisPiece.Green = 4;
 TetrisPiece.Purple = 5;
 TetrisPiece.Orange = 6;
+TetrisPiece.Base = 7;
 
 TetrisPiece.MAPPEDCLOCKWISEROTATIONS = {
     "00": { x: 3, y: 0 }, "10": { x: 3, y: 1 }, "20": { x: 3, y: 2 }, "30": { x: 3, y: 3 },

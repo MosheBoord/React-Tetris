@@ -8,6 +8,7 @@ import nextPieceDispatcher from "../store"
 
 const PIECE_FALLING = "PIECE_FALLING";
 const PIECE_ON_FLOOR = "PIECE_ON_FLOOR";
+const GARBAGE = "GARBAGE";
 
 export default class Tetris extends VideoGame {
     constructor() {
@@ -15,15 +16,24 @@ export default class Tetris extends VideoGame {
         this.state = {
             tetrisBoard: this.getEmptyBoard(),
             physicalBoard: this.getEmptyBoard(),
-            visualBoard: this.getEmptyBoard()
+            visualBoard: this.getEmptyBoard(),
+            garbagePercent: 0,
         };
         this.nextPiece = this.getNextPiece();
         this.currentPiece = this.getNextPiece();
         this.ghostPiece = this.getNextPiece(this.currentPiece.type);
         this.pieces = [this.currentPiece];
-        this.keysStatus = { right: 0, left: 0, down: 0, up: 0, rotateClockwise: 0, rotateCounterClockwise: 0, };
+        this.keysStatus = {
+            right: 0,
+            left: 0,
+            down: 0,
+            up: 0,
+            rotateClockwise: 0,
+            rotateCounterClockwise: 0,
+            swapWithNextPiece: 0,
+        };
         document.addEventListener("keydown", this.keyPressed.bind(this));
-        this.level = 60;
+        this.level = 1;
         this.framesStalled = 0;
         this.rowsCompleted = [];
         this.clearedRows = 0;
@@ -36,6 +46,8 @@ export default class Tetris extends VideoGame {
         this.phase = PIECE_FALLING;
         this.floorKicks = 0;
         this.floorKickLimit = 5;
+        this.garbagePoints = 0;
+        this.garbagePointLimit = 20;
     }
 
     setKeyStatus(keyCode, boolean) {
@@ -64,6 +76,9 @@ export default class Tetris extends VideoGame {
             case KeyEvent.DOM_VK_Z:
                 this.keysStatus.rotateCounterClockwise++;
                 break;
+            case KeyEvent.DOM_VK_SPACE:
+                this.keysStatus.swapWithNextPiece++;
+                break;
             default:
         }
     }
@@ -82,9 +97,10 @@ export default class Tetris extends VideoGame {
 
     runNextFrame() {
         this.store.dispatch({ type: "NEXT_PIECE", nextPiece: this.nextPiece });
-        this.calculateKeyMovements();
+        if (this.phase !== GARBAGE) {
+            this.calculateKeyMovements();
+        }
         this.checkPhase();
-        console.log(this.phase)
 
         switch (this.phase) {
             case PIECE_FALLING:
@@ -99,61 +115,110 @@ export default class Tetris extends VideoGame {
                     this.phase = PIECE_FALLING;
                 }
                 break;
+            case GARBAGE:
+                this.calculateGravity();
+                break;
             default:
         }
 
-
-
-        // this.floorFrames--;
-        // if (!this.floorFrames) {
-        //     this.switchCurrentPiece();
-        // }
-
-        // this.calculateKeyMovements();
         this.calculateCompletedRows();
-
         this.redrawState();
     }
 
     checkPhase() {
+
         const board = this.getGameState().physicalBoard;
         if (this.currentPiece.canMoveDown(board)) {
-            this.phase = PIECE_FALLING;
-            this.floorFrames = 0;
-            this.floorPauseCounter = 0;
+            if (this.phase !== GARBAGE) {
+                this.phase = PIECE_FALLING;
+                this.floorFrames = 0;
+                this.floorPauseCounter = 0;
+            }
         } else {
-            this.pieceLanded();
-            this.phase = PIECE_ON_FLOOR;
+            // console.log(this.currentPiece.canMoveDown(board), this.currentPiece.x)
+            if (this.phase === GARBAGE) {
+                this.pieceLanded();
+                this.switchCurrentPiece();
+            } else {
+                this.phase = PIECE_ON_FLOOR;
+                this.pieceLanded();
+            }
         }
     }
 
     switchCurrentPiece() {
+        const prevBoard = this.getGameState().physicalBoard;
         this.drawToPhysicalBoard(this.currentPiece);
-        this.score += this.level;
-        this.store.dispatch({ type: "SCORE", score: this.score })
-        this.currentPiece = this.nextPiece;
-        this.ghostPiece = this.getNextPiece(this.currentPiece.type);
-        this.pieces.push(this.currentPiece);
-        this.nextPiece = this.getNextPiece();
-        this.downwardForce = 0;
+        if (this.phase === GARBAGE) {
+            this.garbagePoints = 0;
+            this.phase = PIECE_FALLING;
+        } else {
+            this.score += this.level;
+            this.store.dispatch({ type: "SCORE", score: this.score })
+            this.garbagePoints++;
+        }
+
+
+        if (this.garbagePoints >= this.garbagePointLimit) {
+            this.currentPiece = this.getNextPiece();
+            this.currentPiece.setColor(TetrisPiece.Base);
+            this.currentPiece.x = Math.floor(Math.random() * 10 - 1);
+            while (!this.currentPiece.hasLegalPlacement(prevBoard)) {
+                this.currentPiece.x = Math.floor(Math.random() * 10 - 1);
+            }
+
+            this.ghostPiece = null;
+            this.garbagePoints = 0;
+            this.phase = GARBAGE;
+        } else {
+
+            this.currentPiece = this.nextPiece;
+            this.ghostPiece = this.getNextPiece(this.currentPiece.type);
+            this.pieces.push(this.currentPiece);
+            this.nextPiece = this.getNextPiece();
+            this.downwardForce = 0;
+            this.floorKicks = 0;
+        }
+
         this.checkForCompletedRows(this.currentPiece);
+
     }
 
     calculateKeyMovements() {
         const prevBoard = this.getGameState().physicalBoard;
 
-        if (this.keysStatus.right && this.currentPiece && this.currentPiece.canMoveRight(prevBoard)) {
-            this.currentPiece.x++;
-            this.keysStatus.right--;
-            this.stoodInPlace = 0;
+        if (this.keysStatus.right && this.currentPiece) {
+            if (this.currentPiece.canMoveRight(prevBoard)) {
+                this.currentPiece.x++;
+                this.keysStatus.right--;
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canMoveRight(prevBoard, 0, -1) && this.floorKicks <= this.floorKickLimit) {
+                this.floorKicks++;
+                this.currentPiece.y--;
+                this.currentPiece.x++;
+                this.keysStatus.right--;
+                this.stoodInPlace = 0;
+            } else {
+                this.keysStatus.right = 0;
+            }
         } else {
             this.keysStatus.right = 0;
         }
 
-        if (this.keysStatus.left && this.currentPiece && this.currentPiece.canMoveLeft(prevBoard)) {
-            this.currentPiece.x--;
-            this.keysStatus.left--;
-            this.stoodInPlace = 0;
+        if (this.keysStatus.left && this.currentPiece) {
+            if (this.currentPiece.canMoveLeft(prevBoard)) {
+                this.currentPiece.x--;
+                this.keysStatus.left--;
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canMoveLeft(prevBoard, 0, -1) && this.floorKicks <= this.floorKickLimit) {
+                this.floorKicks++;
+                this.currentPiece.y--;
+                this.currentPiece.x--;
+                this.keysStatus.left--;
+                this.stoodInPlace = 0;
+            } else {
+                this.keysStatus.left = 0;
+            }
         } else {
             this.keysStatus.left = 0;
         }
@@ -185,31 +250,107 @@ export default class Tetris extends VideoGame {
         // still need to check if rotation is legal
 
         // if (this.keysStatus.rotateClockwise && this.currentPiece && this.currentPiece.canRotateClockwise(prevBoard)) {
-        if (this.keysStatus.rotateClockwise && this.currentPiece && this.currentPiece.canRotateClockwise(prevBoard)) {
-            // if (this.gamepadConnected && this.rotateClockwise > 1) {
-            this.currentPiece.rotateClockwise();
+        if (this.keysStatus.rotateClockwise && this.currentPiece) {
+            if (this.currentPiece.canRotateClockwise(prevBoard)) {
+                this.currentPiece.rotateClockwise();
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateClockwise(prevBoard, 0, -1)) {
+                this.currentPiece.rotateClockwise(0, -1);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateClockwise(prevBoard, -1, 0)) {
+                this.currentPiece.rotateClockwise(-1, 0);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateClockwise(prevBoard, 1, 0)) {
+                this.currentPiece.rotateClockwise(1, 0);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateClockwise(prevBoard, 0, -2)) {
+                this.currentPiece.rotateClockwise(0, -2);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateClockwise(prevBoard, -2, 0)) {
+                this.currentPiece.rotateClockwise(-2, 0);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateClockwise(prevBoard, 2, 0)) {
+                this.currentPiece.rotateClockwise(2, 0);
+                this.stoodInPlace = 0;
+            }
             this.keysStatus.rotateClockwise = 0;
-            // }
-            this.stoodInPlace = 0;
         } else {
             this.keysStatus.rotateClockwise = 0;
         }
 
-        if (this.keysStatus.rotateCounterClockwise && this.currentPiece && this.currentPiece.canRotateCounterClockwise(prevBoard)) {
+        if (this.keysStatus.rotateCounterClockwise && this.currentPiece) {
+            if (this.currentPiece.canRotateCounterClockwise(prevBoard)) {
+                this.currentPiece.rotateCounterClockwise();
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 0, -1)) {
+                this.currentPiece.rotateCounterClockwise(0, -1);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, -1, 0)) {
+                this.currentPiece.rotateCounterClockwise(-1, 0);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 1, 0)) {
+                this.currentPiece.rotateCounterClockwise(1, 0);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 0, -2)) {
+                this.currentPiece.rotateCounterClockwise(0, -2);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, -2, 0)) {
+                this.currentPiece.rotateCounterClockwise(-2, 0);
+                this.stoodInPlace = 0;
+            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 2, 0)) {
+                this.currentPiece.rotateCounterClockwise(2, 0);
+                this.stoodInPlace = 0;
+            }
             // if (this.gamepadConnected && this.rotateCounterClockwise > 1) {
-            this.currentPiece.rotateCounterClockwise();
-            this.keysStatus.rotateCounterClockwise = 0;
+            // this.currentPiece.rotateCounterClockwise();
+            // this.keysStatus.rotateCounterClockwise = 0;
             // }
-            this.stoodInPlace = 0;
+            this.keysStatus.rotateCounterClockwise = 0;
         } else {
             this.keysStatus.rotateCounterClockwise = 0;
+        }
+
+        if (this.keysStatus.swapWithNextPiece && this.currentPiece) {
+            if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x, this.currentPiece.y)) {
+                this.swapPieces();
+            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x, this.currentPiece.y - 1)) {
+                this.swapPieces(0, -1);
+            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x + 1, this.currentPiece.y)) {
+                this.swapPieces(1, 0);
+            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x - 1, this.currentPiece.y)) {
+                this.swapPieces(-1, 0);
+            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x, this.currentPiece.y - 1)) {
+                this.swapPieces(0, -2);
+            }
+            // this.swapPieces();
+            this.keysStatus.swapWithNextPiece = 0;
+        } else {
+            this.keysStatus.swapWithNextPiece = 0;
         }
 
         this.moveGhostPiece();
     }
 
+    swapPieces(xModifier = 0, yModifier = 0) {
+        const oldX = this.currentPiece.x;
+        const oldY = this.currentPiece.y;
+        this.currentPiece.x = this.nextPiece.x;
+        this.currentPiece.y = this.nextPiece.y;
+        const oldPieceType = this.currentPiece.type;
+        this.currentPiece = this.nextPiece;
+        this.nextPiece = this.getNextPiece(oldPieceType);
+        this.currentPiece.x = oldX + xModifier;
+        this.currentPiece.y = oldY + yModifier;
+        this.ghostPiece = this.getNextPiece(this.currentPiece.type);
+        this.moveGhostPiece();
+    }
+
     calculateGravity() {
-        this.gravity = this.level * 1 / 600 + 1 / 60;
+        if (this.phase === PIECE_FALLING) {
+            this.gravity = this.level * 1 / 600 + 1 / 60;
+        } else {
+            this.gravity = .3;
+        }
         this.downwardForce += this.gravity;
         // console.log(this.downwardForce)
 
