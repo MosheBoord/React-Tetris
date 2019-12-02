@@ -25,6 +25,10 @@ const ROWS_CLEARED = "ROWS_CLEARED";
 
 const SCORE = "SCORE";
 
+const GARBAGE_PERCENTAGE = "GARBAGE_PERCENTAGE";
+
+const GARBAGE_PHASE = "GARBAGE_PHASE";
+
 //ACTION CREATORS
 
 export const boardUpdate = (tetrisBoard) => ({
@@ -35,6 +39,16 @@ export const boardUpdate = (tetrisBoard) => ({
 export const nextPieceDispatcher = (nextPiece) => ({
     type: NEXT_PIECE,
     nextPiece
+})
+
+export const getGarbagePercentage = (garbagePercentage) => ({
+    type: GARBAGE_PERCENTAGE,
+    garbagePercentage
+})
+
+export const getGarbagePhase = (garbagePhase) => ({
+    type: GARBAGE_PHASE,
+    garbagePhase
 })
 
 // setting up an initial chessboard state
@@ -80,6 +94,16 @@ const reducer = (prevState = initialState, action) => {
             return {
                 ...prevState,
                 rowsCleared: action.rowsCleared,
+            };
+        case SCORE:
+            return {
+                ...prevState,
+                score: action.score,
+            };
+        case GARBAGE_PERCENTAGE:
+            return {
+                ...prevState,
+                garbagePercentage: action.garbagePercentage,
             };
         case SCORE:
             return {

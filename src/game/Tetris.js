@@ -30,6 +30,8 @@ export default class Tetris extends VideoGame {
             up: 0,
             rotateClockwise: 0,
             rotateCounterClockwise: 0,
+            getTwoPiece: 0,
+            flattenRow: 0,
             swapWithNextPiece: 0,
         };
         document.addEventListener("keydown", this.keyPressed.bind(this));
@@ -48,6 +50,8 @@ export default class Tetris extends VideoGame {
         this.floorKickLimit = 5;
         this.garbagePoints = 0;
         this.garbagePointLimit = 20;
+        this.twoPieceUseges = 3;
+        this.flattenRowUseges = Infinity;
     }
 
     setKeyStatus(keyCode, boolean) {
@@ -70,11 +74,17 @@ export default class Tetris extends VideoGame {
             case KeyEvent.DOM_VK_UP:
                 this.keysStatus.up++;
                 break;
-            case KeyEvent.DOM_VK_X:
+            case KeyEvent.DOM_VK_A:
+                this.keysStatus.rotateCounterClockwise++;
+                break;
+            case KeyEvent.DOM_VK_D:
                 this.keysStatus.rotateClockwise++;
                 break;
-            case KeyEvent.DOM_VK_Z:
-                this.keysStatus.rotateCounterClockwise++;
+            case KeyEvent.DOM_VK_S:
+                this.keysStatus.getTwoPiece++;
+                break;
+            case KeyEvent.DOM_VK_W:
+                this.keysStatus.flattenRow++;
                 break;
             case KeyEvent.DOM_VK_SPACE:
                 this.keysStatus.swapWithNextPiece++;
@@ -112,7 +122,9 @@ export default class Tetris extends VideoGame {
                 if (this.floorFrames >= this.floorFrameLimit || this.stoodInPlace >= this.standInPlaceLimit) {
                     this.switchCurrentPiece();
                     this.floorFrames = 0;
-                    this.phase = PIECE_FALLING;
+                    if (this.phase !== GARBAGE) {
+                        this.phase = PIECE_FALLING;
+                    }
                 }
                 break;
             case GARBAGE:
@@ -135,7 +147,6 @@ export default class Tetris extends VideoGame {
                 this.floorPauseCounter = 0;
             }
         } else {
-            // console.log(this.currentPiece.canMoveDown(board), this.currentPiece.x)
             if (this.phase === GARBAGE) {
                 this.pieceLanded();
                 this.switchCurrentPiece();
@@ -156,12 +167,14 @@ export default class Tetris extends VideoGame {
             this.score += this.level;
             this.store.dispatch({ type: "SCORE", score: this.score })
             this.garbagePoints++;
+            console.log((this.garbagePoints / (this.garbagePointLimit - 1) * 100));
+            this.setGameState({ garbagePercentage: (this.garbagePoints / (this.garbagePointLimit - 1) * 100) });
         }
 
 
         if (this.garbagePoints >= this.garbagePointLimit) {
             this.currentPiece = this.getNextPiece();
-            this.currentPiece.setColor(TetrisPiece.Base);
+            this.currentPiece.setColor(TetrisPiece.Black);
             this.currentPiece.x = Math.floor(Math.random() * 10 - 1);
             while (!this.currentPiece.hasLegalPlacement(prevBoard)) {
                 this.currentPiece.x = Math.floor(Math.random() * 10 - 1);
@@ -169,6 +182,7 @@ export default class Tetris extends VideoGame {
 
             this.ghostPiece = null;
             this.garbagePoints = 0;
+            this.setGameState({ garbagePercentage: 0 });
             this.phase = GARBAGE;
         } else {
 
@@ -326,6 +340,23 @@ export default class Tetris extends VideoGame {
             this.keysStatus.swapWithNextPiece = 0;
         } else {
             this.keysStatus.swapWithNextPiece = 0;
+        }
+
+        if (this.keysStatus.getTwoPiece && this.twoPieceUseges && this.currentPiece.type !== TetrisPiece.TWO) {
+            const oldX = this.currentPiece.x;
+            const oldY = this.currentPiece.y;
+            this.currentPiece = this.getNextPiece(TetrisPiece.TWO);
+            this.currentPiece.x = oldX;
+            this.currentPiece.y = oldY;
+            this.ghostPiece = this.getNextPiece(TetrisPiece.TWO);
+            this.keysStatus.getTwoPiece = 0;
+            this.twoPieceUseges--;
+        } else {
+            this.keysStatus.getTwoPiece = 0;
+        }
+
+        if (this.keysStatus.flattenRow) {
+
         }
 
         this.moveGhostPiece();

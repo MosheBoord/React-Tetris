@@ -4,10 +4,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Board from "./components/Board";
 import OptionsPanel from "./components/OptionsPanel"
+import PowerPanel from "./components/PowerPanel"
 import { Provider } from "react-redux";
-import store, { boardUpdate } from "./store";
+import store, { boardUpdate, getGarbagePercentage } from "./store";
 import "./App.css";
 import Tetris from "./game/Tetris";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
     (
@@ -18,8 +20,9 @@ ReactDOM.render(
                 justifyContent: "center",
                 alignItems: "center"
             }}>
-                <Board />
                 <OptionsPanel />
+                <Board />
+                <PowerPanel />
             </div>
         </Provider >
     )
@@ -27,7 +30,10 @@ ReactDOM.render(
 );
 
 const tetris = new Tetris();
-tetris.subscribeToGameState(store, { tetrisBoard: boardUpdate })
+tetris.subscribeToGameState(store, {
+    tetrisBoard: boardUpdate,
+    garbagePercentage: getGarbagePercentage
+})
 
 tetris.setFrameRate(1000 / 1);
 

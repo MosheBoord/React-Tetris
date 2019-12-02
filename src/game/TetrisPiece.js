@@ -58,6 +58,11 @@ export default class TetrisPiece {
                 this.cells[2] = { x: 1, y: 1, color: TetrisPiece.Red, isEmpty: false }
                 this.cells[3] = { x: 2, y: 1, color: TetrisPiece.Red, isEmpty: false }
                 break;
+            case TetrisPiece.TWO:
+                this.cells[0] = { x: 1, y: 1, color: TetrisPiece.White, isEmpty: false }
+                this.cells[1] = { x: 1, y: 2, color: TetrisPiece.White, isEmpty: false }
+                this.length = 4;
+                break;
             default:
         }
         this.cells.forEach(cell => {
@@ -99,7 +104,6 @@ export default class TetrisPiece {
                 if (this.y + cell.y > 18) {
                     flag = false;
                 } else if (!board[y + 1][x].isEmpty && board[y + 1][x].piece !== this) {
-                    console.log(x)
                     flag = false;
                 }
             } catch (error) {
@@ -234,6 +238,7 @@ TetrisPiece.L = 3;
 TetrisPiece.T = 4;
 TetrisPiece.S = 5;
 TetrisPiece.Z = 6;
+TetrisPiece.TWO = 7;
 
 TetrisPiece.Blue = 0;
 TetrisPiece.LightBlue = 1;
@@ -242,7 +247,9 @@ TetrisPiece.Yellow = 3;
 TetrisPiece.Green = 4;
 TetrisPiece.Purple = 5;
 TetrisPiece.Orange = 6;
-TetrisPiece.Base = 7;
+TetrisPiece.Black = 7;
+TetrisPiece.White = 8;
+TetrisPiece.Rainbow = 9;
 
 TetrisPiece.MAPPEDCLOCKWISEROTATIONS = {
     "00": { x: 3, y: 0 }, "10": { x: 3, y: 1 }, "20": { x: 3, y: 2 }, "30": { x: 3, y: 3 },

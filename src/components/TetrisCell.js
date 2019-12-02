@@ -11,7 +11,9 @@ import tetrisCellYellow from "../images/tetris cell yellow.png";
 import tetrisCellGreen from "../images/tetris cell green.png";
 import tetrisCellPurple from "../images/tetris cell purple.png";
 import tetrisCellOrange from "../images/tetris cell orange.png";
-import tetrisCellBase from "../images/tetris cell base.png";
+import tetrisCellBlack from "../images/tetris cell black.png";
+import tetrisCellWhite from "../images/tetris cell white.png";
+import tetrisCellRainbow from "../images/tetris cell rainbow.png";
 
 import tetrisCellBlueGhost from "../images/tetris cell blue ghost.png";
 import tetrisCellLightBlueGhost from "../images/tetris cell light blue ghost.png";
@@ -20,6 +22,7 @@ import tetrisCellYellowGhost from "../images/tetris cell yellow ghost.png";
 import tetrisCellGreenGhost from "../images/tetris cell green ghost.png";
 import tetrisCellPurpleGhost from "../images/tetris cell purple ghost.png";
 import tetrisCellOrangeGhost from "../images/tetris cell orange ghost.png";
+import tetrisCellWhiteGhost from "../images/tetris cell white ghost.png";
 
 import TetrisPiece from "../game/TetrisPiece";
 
@@ -54,6 +57,9 @@ const TetrisCell = props => {
                 case TetrisPiece.Orange:
                     src = tetrisCellOrangeGhost;
                     break;
+                case TetrisPiece.White:
+                    src = tetrisCellWhiteGhost;
+                    break;
                 default:
             }
         } else {
@@ -79,8 +85,14 @@ const TetrisCell = props => {
                 case TetrisPiece.Orange:
                     src = tetrisCellOrange;
                     break;
-                case TetrisPiece.Base:
-                    src = tetrisCellBase;
+                case TetrisPiece.Black:
+                    src = tetrisCellBlack;
+                    break;
+                case TetrisPiece.White:
+                    src = tetrisCellWhite;
+                    break;
+                case TetrisPiece.Rainbow:
+                    src = tetrisCellRainbow;
                     break;
                 default:
             }

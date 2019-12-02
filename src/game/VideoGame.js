@@ -50,11 +50,11 @@ export default class VideoGame {
                 let gp = navigator.getGamepads()[0];
 
                 if (gp.buttons[4].pressed) {
-                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_Z, true);
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_A, true);
                 }
 
                 if (gp.buttons[5].pressed) {
-                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_X, true);
+                    gameEngine.setKeyStatus(KeyEvent.DOM_VK_D, true);
                 }
 
                 if (gp.buttons[12].pressed) {
