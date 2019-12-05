@@ -6,9 +6,11 @@ import KeyEvent from "./KeyEvent";
 //the following is bad code, done quickly to get it working, but should be redone to have entire state change to update store.
 import nextPieceDispatcher from "../store"
 
+// LIST OF PHASES
 const PIECE_FALLING = "PIECE_FALLING";
 const PIECE_ON_FLOOR = "PIECE_ON_FLOOR";
 const GARBAGE = "GARBAGE";
+const GAME_OVER = "GAME_OVER";
 
 export default class Tetris extends VideoGame {
     constructor() {
@@ -51,7 +53,15 @@ export default class Tetris extends VideoGame {
         this.garbagePoints = 0;
         this.garbagePointLimit = 20;
         this.twoPieceUseges = 3;
-        this.flattenRowUseges = Infinity;
+        this.flattenRowUseges = 3;
+
+        this.gameOverCells = [];
+        const gameOverGrid = setUpGameOverCells();
+        for (let y = 0; y < 20; y++) {
+            for (let x = 0; x < 10; x++) {
+                this.gameOverCells.push(gameOverGrid[y][x]);
+            }
+        }
     }
 
     setKeyStatus(keyCode, boolean) {
@@ -130,6 +140,20 @@ export default class Tetris extends VideoGame {
             case GARBAGE:
                 this.calculateGravity();
                 break;
+            case GAME_OVER:
+                if (this.gameOverCells.length) {
+                    const cell = this.gameOverCells.pop();
+                    this.getGameState().physicalBoard[cell.y][cell.x] = cell;
+                }
+                if (this.gameOverCells.length) {
+                    const cell = this.gameOverCells.pop();
+                    this.getGameState().physicalBoard[cell.y][cell.x] = cell;
+                }
+                if (this.gameOverCells.length) {
+                    const cell = this.gameOverCells.pop();
+                    this.getGameState().physicalBoard[cell.y][cell.x] = cell;
+                }
+                break;
             default:
         }
 
@@ -138,6 +162,9 @@ export default class Tetris extends VideoGame {
     }
 
     checkPhase() {
+        if (this.phase === GAME_OVER) {
+            return;
+        }
 
         const board = this.getGameState().physicalBoard;
         if (this.currentPiece.canMoveDown(board)) {
@@ -149,7 +176,9 @@ export default class Tetris extends VideoGame {
         } else {
             if (this.phase === GARBAGE) {
                 this.pieceLanded();
-                this.switchCurrentPiece();
+                if (this.phase !== GAME_OVER) {
+                    this.switchCurrentPiece();
+                }
             } else {
                 this.phase = PIECE_ON_FLOOR;
                 this.pieceLanded();
@@ -158,6 +187,10 @@ export default class Tetris extends VideoGame {
     }
 
     switchCurrentPiece() {
+        if (this.phase === GAME_OVER) {
+            return;
+        }
+
         const prevBoard = this.getGameState().physicalBoard;
         this.drawToPhysicalBoard(this.currentPiece);
         if (this.phase === GARBAGE) {
@@ -199,6 +232,10 @@ export default class Tetris extends VideoGame {
     }
 
     calculateKeyMovements() {
+        if (this.phase === GAME_OVER) {
+            return;
+        }
+
         const prevBoard = this.getGameState().physicalBoard;
 
         if (this.keysStatus.right && this.currentPiece) {
@@ -406,7 +443,11 @@ export default class Tetris extends VideoGame {
         // this.currentPiece.supported = true;
         // this.drawToPhysicalBoard(this.currentPiece);
         if (this.currentPiece.y < -2) {
-            this.stop();
+            // this.stop();
+            this.phase = GAME_OVER;
+            // this.gameOverCells.sort(() => Math.round(Math.random));
+            this.shuffle(this.gameOverCells);
+            this.ghostPiece = null;
         }
         // this.checkForCompletedRows(this.currentPiece);
         // this.floorFrames = 3 * (40 - this.level);
@@ -526,4 +567,119 @@ export default class Tetris extends VideoGame {
             }
         }
     }
+
+    shuffle(array) {
+        let currentIndex = array.length, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+
+        return array;
+    }
+}
+
+function setUpGameOverCells() {
+    const gameOverBoard = [];
+    for (let y = 0; y < 20; y++) {
+        let row = [];
+        for (let x = 0; x < 10; x++) {
+            row.push({ x, y, isEmpty: false, color: TetrisPiece.Red });
+        }
+        gameOverBoard.push(row);
+    }
+
+    for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 10; x++) {
+            gameOverBoard[y][x].isEmpty = true;
+        }
+    }
+
+    gameOverBoard[3][0].isEmpty = true;
+    gameOverBoard[3][1].isEmpty = true;
+    gameOverBoard[3][2].isEmpty = true;
+    gameOverBoard[3][7].isEmpty = true;
+    gameOverBoard[3][8].isEmpty = true;
+    gameOverBoard[3][9].isEmpty = true;
+
+    gameOverBoard[4][0].isEmpty = true;
+    gameOverBoard[4][9].isEmpty = true;
+
+    gameOverBoard[5][0].isEmpty = true;
+    gameOverBoard[5][9].isEmpty = true;
+
+    gameOverBoard[6][2].isEmpty = true;
+    gameOverBoard[6][3].isEmpty = true;
+    gameOverBoard[6][6].isEmpty = true;
+    gameOverBoard[6][7].isEmpty = true;
+
+    gameOverBoard[7][2].isEmpty = true;
+    gameOverBoard[7][3].isEmpty = true;
+    gameOverBoard[7][6].isEmpty = true;
+    gameOverBoard[7][7].isEmpty = true;
+
+    gameOverBoard[9][4].isEmpty = true;
+    gameOverBoard[9][5].isEmpty = true;
+
+    gameOverBoard[10][0].isEmpty = true;
+    gameOverBoard[10][9].isEmpty = true;
+
+    gameOverBoard[11][0].isEmpty = true;
+    gameOverBoard[11][1].isEmpty = true;
+    gameOverBoard[11][2].isEmpty = true;
+    gameOverBoard[11][4].isEmpty = true;
+    gameOverBoard[11][5].isEmpty = true;
+    gameOverBoard[11][7].isEmpty = true;
+    gameOverBoard[11][8].isEmpty = true;
+    gameOverBoard[11][9].isEmpty = true;
+
+    gameOverBoard[12][0].isEmpty = true;
+    gameOverBoard[12][2].isEmpty = true;
+    gameOverBoard[12][4].isEmpty = true;
+    gameOverBoard[12][5].isEmpty = true;
+    gameOverBoard[12][7].isEmpty = true;
+    gameOverBoard[12][9].isEmpty = true;
+
+    gameOverBoard[13][0].isEmpty = true;
+    gameOverBoard[13][2].isEmpty = true;
+    gameOverBoard[13][3].isEmpty = true;
+    gameOverBoard[13][4].isEmpty = true;
+    gameOverBoard[13][5].isEmpty = true;
+    gameOverBoard[13][6].isEmpty = true;
+    gameOverBoard[13][7].isEmpty = true;
+    gameOverBoard[13][9].isEmpty = true;
+
+    gameOverBoard[14][0].isEmpty = true;
+    gameOverBoard[14][3].isEmpty = true;
+    gameOverBoard[14][6].isEmpty = true;
+    gameOverBoard[14][9].isEmpty = true;
+
+    gameOverBoard[15][0].isEmpty = true;
+    gameOverBoard[15][1].isEmpty = true;
+    gameOverBoard[15][8].isEmpty = true;
+    gameOverBoard[15][9].isEmpty = true;
+
+    gameOverBoard[16][0].isEmpty = true;
+    gameOverBoard[16][1].isEmpty = true;
+    gameOverBoard[16][2].isEmpty = true;
+    gameOverBoard[16][7].isEmpty = true;
+    gameOverBoard[16][8].isEmpty = true;
+    gameOverBoard[16][9].isEmpty = true;
+
+    for (let y = 17; y < 20; y++) {
+        for (let x = 0; x < 10; x++) {
+            gameOverBoard[y][x].isEmpty = true;
+        }
+    }
+
+    return gameOverBoard;
 }

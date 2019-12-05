@@ -21,37 +21,8 @@ const OptionsPanel = props => {
             <div style={{
                 border: "3px solid grey",
                 color: "white",
-                width: "60%",
-                height: "15%",
-                textAlign: "center",
-                margin: "5px"
-            }}>
-                <div style={{ margin: "10px" }}>
-                    Score: {props.score}
-                </div>
-
-                <div style={{ margin: "10px" }}>
-                    Rows Cleared: {props.rowsCleared}
-                </div>
-            </div>
-            <div style={{
-                border: "3px solid grey",
-                color: "white",
-                width: "60%",
-                height: "30%",
-                textAlign: "center",
-                margin: "5px"
-            }}>
-                <div style={{ margin: "10px" }}>
-                    Next Piece
-                </div>
-                <UpcomingTetrisPiece nextPiece={props.nextPiece} />
-            </div>
-            <div style={{
-                border: "3px solid grey",
-                color: "white",
-                width: "60%",
-                height: "40%",
+                width: "80%",
+                height: "80%",
                 textAlign: "center",
                 margin: "5px"
             }}>
@@ -60,7 +31,9 @@ const OptionsPanel = props => {
 
                     Use the arrow keys to move the piece. The up key will instantly drop the piece.
 
-                    Use the Z and X keys to rotate the piece.
+                    Use the A and D keys to rotate the piece.
+
+                    Use the Space key to swap the current piece with the upcomming piece.
                 </div>
                 <div style={{ margin: "10px" }}>
                     Goal: Clear as many rows as possible by filling them up.

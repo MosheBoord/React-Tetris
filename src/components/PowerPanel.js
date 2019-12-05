@@ -22,6 +22,35 @@ const PowerPanel = props => {
             <div style={{
                 border: "3px solid grey",
                 color: "white",
+                width: "60%",
+                height: "15%",
+                textAlign: "center",
+                margin: "5px"
+            }}>
+                <div style={{ margin: "10px" }}>
+                    Score: {props.score}
+                </div>
+
+                <div style={{ margin: "10px" }}>
+                    Rows Cleared: {props.rowsCleared}
+                </div>
+            </div>
+            <div style={{
+                border: "3px solid grey",
+                color: "white",
+                width: "60%",
+                height: "30%",
+                textAlign: "center",
+                margin: "5px"
+            }}>
+                <div style={{ margin: "10px" }}>
+                    Next Piece
+                </div>
+                <UpcomingTetrisPiece nextPiece={props.nextPiece} />
+            </div>
+            {/* <div style={{
+                border: "3px solid grey",
+                color: "white",
                 width: "90%",
                 height: "15%",
                 textAlign: "center",
@@ -31,38 +60,15 @@ const PowerPanel = props => {
                     Garbage:
                     <Progress animated color="danger" value={props.garbagePercentage} />
                 </div>
-            </div>
-            <div style={{
-                border: "3px solid grey",
-                color: "white",
-                width: "90%",
-                height: "15%",
-                textAlign: "center",
-                margin: "5px"
-            }}>
-                <div style={{ margin: "10px" }}>
-                    Flatten:
-                    <Progress animated value={props.garbagePercentage} />
-                </div>
-            </div>
-            <div style={{
-                border: "3px solid grey",
-                color: "white",
-                width: "90%",
-                height: "15%",
-                textAlign: "center",
-                margin: "5px"
-            }}>
-                <div style={{ margin: "10px" }}>
-                    Wild:
-                    <Progress animated color="success" value={props.garbagePercentage} />
-                </div>
-            </div>
+            </div> */}
         </div>
     );
 };
 
 const mapStateToProps = state => ({
+    nextPiece: state.nextPiece,
+    score: state.score,
+    rowsCleared: state.rowsCleared,
     garbagePhase: state.garbagePhase,
     garbagePercentage: state.garbagePercentage,
     flattenPercentage: state.flattenPercentage,
