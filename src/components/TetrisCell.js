@@ -14,6 +14,13 @@ import tetrisCellOrange from "../images/tetris cell orange.png";
 import tetrisCellBlack from "../images/tetris cell black.png";
 import tetrisCellWhite from "../images/tetris cell white.png";
 import tetrisCellRainbow from "../images/tetris cell rainbow.png";
+import tetrisCellG from "../images/tetris cell G.png";
+import tetrisCellA from "../images/tetris cell A.png";
+import tetrisCellM from "../images/tetris cell M.png";
+import tetrisCellE from "../images/tetris cell E.png";
+import tetrisCellO from "../images/tetris cell O.png";
+import tetrisCellV from "../images/tetris cell V.png";
+import tetrisCellR from "../images/tetris cell R.png";
 
 import tetrisCellBlueGhost from "../images/tetris cell blue ghost.png";
 import tetrisCellLightBlueGhost from "../images/tetris cell light blue ghost.png";
@@ -93,6 +100,27 @@ const TetrisCell = props => {
                     break;
                 case TetrisPiece.Rainbow:
                     src = tetrisCellRainbow;
+                    break;
+                case TetrisPiece.TextG:
+                    src = tetrisCellG;
+                    break;
+                case TetrisPiece.TextA:
+                    src = tetrisCellA;
+                    break;
+                case TetrisPiece.TextM:
+                    src = tetrisCellM;
+                    break;
+                case TetrisPiece.TextE:
+                    src = tetrisCellE;
+                    break;
+                case TetrisPiece.TextO:
+                    src = tetrisCellO;
+                    break;
+                case TetrisPiece.TextV:
+                    src = tetrisCellV;
+                    break;
+                case TetrisPiece.TextR:
+                    src = tetrisCellR;
                     break;
                 default:
             }

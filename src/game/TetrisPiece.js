@@ -250,6 +250,13 @@ TetrisPiece.Orange = 6;
 TetrisPiece.Black = 7;
 TetrisPiece.White = 8;
 TetrisPiece.Rainbow = 9;
+TetrisPiece.TextG = 10;
+TetrisPiece.TextA = 11;
+TetrisPiece.TextM = 12;
+TetrisPiece.TextE = 13;
+TetrisPiece.TextO = 14;
+TetrisPiece.TextV = 15;
+TetrisPiece.TextR = 16;
 
 TetrisPiece.MAPPEDCLOCKWISEROTATIONS = {
     "00": { x: 3, y: 0 }, "10": { x: 3, y: 1 }, "20": { x: 3, y: 2 }, "30": { x: 3, y: 3 },

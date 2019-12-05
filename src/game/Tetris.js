@@ -604,6 +604,23 @@ function setUpGameOverCells() {
         }
     }
 
+    gameOverBoard[1][1].isEmpty = false;
+    gameOverBoard[1][1].color = TetrisPiece.TextG;
+    gameOverBoard[1][2].isEmpty = false;
+    gameOverBoard[1][2].color = TetrisPiece.TextA;
+    gameOverBoard[1][3].isEmpty = false;
+    gameOverBoard[1][3].color = TetrisPiece.TextM;
+    gameOverBoard[1][4].isEmpty = false;
+    gameOverBoard[1][4].color = TetrisPiece.TextE;
+    gameOverBoard[1][5].isEmpty = false;
+    gameOverBoard[1][5].color = TetrisPiece.TextO;
+    gameOverBoard[1][6].isEmpty = false;
+    gameOverBoard[1][6].color = TetrisPiece.TextV;
+    gameOverBoard[1][7].isEmpty = false;
+    gameOverBoard[1][7].color = TetrisPiece.TextE;
+    gameOverBoard[1][8].isEmpty = false;
+    gameOverBoard[1][8].color = TetrisPiece.TextR;
+
     gameOverBoard[3][0].isEmpty = true;
     gameOverBoard[3][1].isEmpty = true;
     gameOverBoard[3][2].isEmpty = true;
