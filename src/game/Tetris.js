@@ -631,8 +631,8 @@ function setUpGameOverCells() {
     gameOverBoard[4][0].isEmpty = true;
     gameOverBoard[4][9].isEmpty = true;
 
-    gameOverBoard[5][0].isEmpty = true;
-    gameOverBoard[5][9].isEmpty = true;
+    // gameOverBoard[5][0].isEmpty = true;
+    // gameOverBoard[5][9].isEmpty = true;
 
     gameOverBoard[6][2].isEmpty = true;
     gameOverBoard[6][3].isEmpty = true;
