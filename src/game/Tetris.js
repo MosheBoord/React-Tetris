@@ -11,6 +11,8 @@ const PIECE_FALLING = "PIECE_FALLING";
 const PIECE_ON_FLOOR = "PIECE_ON_FLOOR";
 const GARBAGE = "GARBAGE";
 const GAME_OVER = "GAME_OVER";
+const RAINBOW = "RAINBOW";
+
 
 export default class Tetris extends VideoGame {
     constructor() {
@@ -52,8 +54,13 @@ export default class Tetris extends VideoGame {
         this.floorKickLimit = 5;
         this.garbagePoints = 0;
         this.garbagePointLimit = 20;
-        this.twoPieceUseges = 3;
-        this.flattenRowUseges = 3;
+        this.timeInAir = 0;
+        this.twoPieceMicroPoints = 0;
+        this.twoPieceUseges = 0;
+        this.flattenRowPoints = 0;
+        this.flattenRowUseges = 0;
+        this.rainbowPieces = null;
+        this.rainbowLandedFrames = 0;
 
         this.gameOverCells = [];
         const gameOverGrid = setUpGameOverCells();
@@ -116,8 +123,9 @@ export default class Tetris extends VideoGame {
     }
 
     runNextFrame() {
+        // console.log("hello")
         this.store.dispatch({ type: "NEXT_PIECE", nextPiece: this.nextPiece });
-        if (this.phase !== GARBAGE) {
+        if (this.phase !== GARBAGE && this.phase !== RAINBOW) {
             this.calculateKeyMovements();
         }
         this.checkPhase();
@@ -125,6 +133,7 @@ export default class Tetris extends VideoGame {
         switch (this.phase) {
             case PIECE_FALLING:
                 this.calculateGravity();
+                this.timeInAir++;
                 break;
             case PIECE_ON_FLOOR:
                 this.floorFrames++;
@@ -154,6 +163,20 @@ export default class Tetris extends VideoGame {
                     this.getGameState().physicalBoard[cell.y][cell.x] = cell;
                 }
                 break;
+            case RAINBOW:
+                if (this.rainbowPieces.length) {
+                    this.runRainbowMovements();
+                } else {
+                    this.rainbowLandedFrames++;
+                    if (this.rainbowLandedFrames === 10) {
+                        this.rainbowLandedFrames = 0;
+                        this.checkForCompletedRows();
+                        this.switchCurrentPiece();
+                        this.phase = PIECE_FALLING;
+                        this.rainbowPieces = null;
+                    }
+                }
+                break;
             default:
         }
 
@@ -163,7 +186,7 @@ export default class Tetris extends VideoGame {
     }
 
     checkPhase() {
-        if (this.phase === GAME_OVER) {
+        if (this.phase === GAME_OVER || this.phase === RAINBOW) {
             return;
         }
 
@@ -191,21 +214,26 @@ export default class Tetris extends VideoGame {
         if (this.phase === GAME_OVER) {
             return;
         }
-        this.pieceLanded();
+        if (this.phase !== RAINBOW) {
+            this.pieceLanded();
+        }
         if (this.phase === GAME_OVER) {
             return;
         }
         const prevBoard = this.getGameState().physicalBoard;
-        this.drawToPhysicalBoard(this.currentPiece);
+        if (this.phase !== RAINBOW) {
+            this.drawToPhysicalBoard(this.currentPiece);
+        }
         if (this.phase === GARBAGE) {
             this.garbagePoints = 0;
             this.phase = PIECE_FALLING;
+            this.timeInAir = 0;
         } else {
             this.score += this.level;
             this.store.dispatch({ type: "SCORE", score: this.score })
             this.garbagePoints++;
             console.log((this.garbagePoints / (this.garbagePointLimit - 1) * 100));
-            this.setGameState({ garbagePercentage: (this.garbagePoints / (this.garbagePointLimit - 1) * 100) });
+            // this.setGameState({ garbagePercentage: (this.garbagePoints / (this.garbagePointLimit - 1) * 100) });
         }
 
 
@@ -216,13 +244,20 @@ export default class Tetris extends VideoGame {
             while (!this.currentPiece.hasLegalPlacement(prevBoard)) {
                 this.currentPiece.x = Math.floor(Math.random() * 10 - 1);
             }
-
             this.ghostPiece = null;
             this.garbagePoints = 0;
-            this.setGameState({ garbagePercentage: 0 });
+            // this.setGameState({ garbagePercentage: 0 });
             this.phase = GARBAGE;
         } else {
-
+            if (this.timeInAir < 250) {
+                this.twoPieceMicroPoints += 250 - this.timeInAir;
+                this.setGameState({ garbagePercentage: this.twoPieceMicroPoints / 60 });
+                if (this.twoPieceMicroPoints >= 6000) {
+                    this.twoPieceMicroPoints -= 6000;
+                    this.twoPieceUseges++;
+                }
+            }
+            this.timeInAir = 0;
             this.currentPiece = this.nextPiece;
             this.ghostPiece = this.getNextPiece(this.currentPiece.type);
             this.pieces.push(this.currentPiece);
@@ -396,13 +431,21 @@ export default class Tetris extends VideoGame {
             this.keysStatus.getTwoPiece = 0;
         }
 
-        // if (this.keysStatus.flattenRow && this.flattenRowUseges) {
-        //     this.currentPiece = this.getNextPiece(TetrisPiece.ROW);
-        //     this.flattenRowUseges--;
-        //     this.keysStatus.flattenRow = 0;
-        // } else {
-        //     this.keysStatus.flattenRow = 0;
-        // }
+        if (this.keysStatus.flattenRow && this.flattenRowUseges) {
+            // this.currentPiece = this.getNextPiece(TetrisPiece.ROW);
+            this.currentPiece = null;
+            this.ghostPiece = null;
+            this.rainbowPieces = [];
+            for (let i = 0; i < 10; i++) {
+                this.rainbowPieces.push(this.getNextPiece(TetrisPiece.RAINBOW_PIECE));
+                this.rainbowPieces[i].x = i;
+            }
+            this.phase = RAINBOW;
+            this.flattenRowUseges--;
+            this.keysStatus.flattenRow = 0;
+        } else {
+            this.keysStatus.flattenRow = 0;
+        }
 
         this.moveGhostPiece();
     }
@@ -426,7 +469,7 @@ export default class Tetris extends VideoGame {
         if (this.phase === PIECE_FALLING) {
             this.gravity = this.level * 1 / 600 + 1 / 60;
         } else {
-            this.gravity = .3;
+            this.gravity = .25;
         }
 
         // this.gravity = 0;
@@ -514,6 +557,16 @@ export default class Tetris extends VideoGame {
             })
         }
 
+        if (this.rainbowPieces) {
+            this.rainbowPieces.forEach(piece => {
+                const y = piece.y;
+                const x = piece.x;
+                if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
+                    visualBoard[y][x] = piece.cells[0];
+                }
+            })
+        }
+
         for (let y = 0; y < 20; y++) {
             for (let x = 0; x < 10; x++) {
                 if (!physicalBoard[y][x].isEmpty) {
@@ -554,6 +607,14 @@ export default class Tetris extends VideoGame {
         const board = this.getGameState().physicalBoard;
         this.score += this.rowsCompleted.length * this.rowsCompleted.length * this.level * 50;
         this.store.dispatch({ type: "SCORE", score: this.score })
+
+        this.flattenRowPoints += (this.rowsCompleted.length * 2) - 1
+        while (this.flattenRowPoints >= 30) {
+            this.flattenRowUseges++;
+            this.flattenRowPoints -= 30;
+            // here we need to dispatch the uses
+        }
+
         while (this.rowsCompleted.length) {
             board.splice(this.rowsCompleted.shift(), 1);
             this.clearedRows++;
@@ -599,6 +660,35 @@ export default class Tetris extends VideoGame {
         }
 
         return array;
+    }
+
+    runRainbowMovements() {
+        this.gravity = .2;
+        this.downwardForce += this.gravity;
+        const prevBoard = this.getGameState().physicalBoard;
+        for (let i = 0; i < this.rainbowPieces.length; i++) {
+            let wholeUnits = Math.floor(this.downwardForce);
+            while (this.rainbowPieces[i].canMoveDown(prevBoard) && wholeUnits) {
+                this.rainbowPieces[i].y++;
+                wholeUnits--;
+            }
+            if (wholeUnits) {
+                let yLocation = this.rainbowPieces[i].y;
+                for (let y = 19; y > this.rainbowPieces[i].y; y--) {
+                    if (this.getGameState().physicalBoard[y][this.rainbowPieces[i].x].isEmpty) {
+                        if (y === 19 || !this.getGameState().physicalBoard[y + 1][this.rainbowPieces[i].x].isEmpty) {
+                            yLocation = y;
+                        }
+                    }
+                }
+                this.getGameState().physicalBoard[yLocation][this.rainbowPieces[i].x] = this.rainbowPieces[i].cells[0];
+                this.rainbowPieces[i] = null;
+            }
+        }
+        this.rainbowPieces = this.rainbowPieces.filter(piece => piece);
+
+        let wholeUnits = Math.floor(this.downwardForce);
+        this.downwardForce -= wholeUnits;
     }
 }
 

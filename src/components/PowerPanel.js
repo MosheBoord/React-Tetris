@@ -61,7 +61,7 @@ const PowerPanel = props => {
                 </div>
                 <UpcomingTetrisPiece nextPiece={props.nextPiece} />
             </div>
-            {/* <div style={{
+            <div style={{
                 border: "3px solid grey",
                 color: "white",
                 width: "90%",
@@ -73,7 +73,7 @@ const PowerPanel = props => {
                     Garbage:
                     <Progress animated color="danger" value={props.garbagePercentage} />
                 </div>
-            </div> */}
+            </div>
         </div>
     );
 };
