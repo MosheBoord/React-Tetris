@@ -157,6 +157,7 @@ export default class Tetris extends VideoGame {
             default:
         }
 
+        this.setGameState({ phase: this.phase });
         this.calculateCompletedRows();
         this.redrawState();
     }
@@ -176,9 +177,9 @@ export default class Tetris extends VideoGame {
         } else {
             if (this.phase === GARBAGE) {
                 this.pieceLanded();
-                if (this.phase !== GAME_OVER) {
-                    this.switchCurrentPiece();
-                }
+                // if (this.phase !== GAME_OVER) {
+                this.switchCurrentPiece();
+                // }
             } else {
                 this.phase = PIECE_ON_FLOOR;
                 this.pieceLanded();
@@ -190,7 +191,10 @@ export default class Tetris extends VideoGame {
         if (this.phase === GAME_OVER) {
             return;
         }
-
+        this.pieceLanded();
+        if (this.phase === GAME_OVER) {
+            return;
+        }
         const prevBoard = this.getGameState().physicalBoard;
         this.drawToPhysicalBoard(this.currentPiece);
         if (this.phase === GARBAGE) {
@@ -392,9 +396,13 @@ export default class Tetris extends VideoGame {
             this.keysStatus.getTwoPiece = 0;
         }
 
-        if (this.keysStatus.flattenRow) {
-
-        }
+        // if (this.keysStatus.flattenRow && this.flattenRowUseges) {
+        //     this.currentPiece = this.getNextPiece(TetrisPiece.ROW);
+        //     this.flattenRowUseges--;
+        //     this.keysStatus.flattenRow = 0;
+        // } else {
+        //     this.keysStatus.flattenRow = 0;
+        // }
 
         this.moveGhostPiece();
     }
@@ -414,11 +422,15 @@ export default class Tetris extends VideoGame {
     }
 
     calculateGravity() {
+
         if (this.phase === PIECE_FALLING) {
             this.gravity = this.level * 1 / 600 + 1 / 60;
         } else {
             this.gravity = .3;
         }
+
+        // this.gravity = 0;
+
         this.downwardForce += this.gravity;
         // console.log(this.downwardForce)
 
@@ -445,9 +457,11 @@ export default class Tetris extends VideoGame {
         if (this.currentPiece.y < -2) {
             // this.stop();
             this.phase = GAME_OVER;
+            this.setGameState({ garbagePercentage: 0 });
             // this.gameOverCells.sort(() => Math.round(Math.random));
             this.shuffle(this.gameOverCells);
             this.ghostPiece = null;
+            this.currentPiece = null;
         }
         // this.checkForCompletedRows(this.currentPiece);
         // this.floorFrames = 3 * (40 - this.level);

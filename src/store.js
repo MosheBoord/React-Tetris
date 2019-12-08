@@ -29,6 +29,9 @@ const GARBAGE_PERCENTAGE = "GARBAGE_PERCENTAGE";
 
 const GARBAGE_PHASE = "GARBAGE_PHASE";
 
+const GET_PHASE = "GET_PHASE";
+
+
 //ACTION CREATORS
 
 export const boardUpdate = (tetrisBoard) => ({
@@ -49,6 +52,11 @@ export const getGarbagePercentage = (garbagePercentage) => ({
 export const getGarbagePhase = (garbagePhase) => ({
     type: GARBAGE_PHASE,
     garbagePhase
+})
+
+export const getPhase = (phase) => ({
+    type: GET_PHASE,
+    phase
 })
 
 // setting up an initial chessboard state
@@ -105,10 +113,10 @@ const reducer = (prevState = initialState, action) => {
                 ...prevState,
                 garbagePercentage: action.garbagePercentage,
             };
-        case SCORE:
+        case GET_PHASE:
             return {
                 ...prevState,
-                score: action.score,
+                phase: action.phase,
             };
         default:
             return prevState;

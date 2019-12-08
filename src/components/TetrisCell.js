@@ -32,6 +32,7 @@ import tetrisCellOrangeGhost from "../images/tetris cell orange ghost.png";
 import tetrisCellWhiteGhost from "../images/tetris cell white ghost.png";
 
 import TetrisPiece from "../game/TetrisPiece";
+import { LightingSource } from "./Shaders";
 
 const TetrisCell = props => {
     const { cell } = props;
@@ -130,6 +131,12 @@ const TetrisCell = props => {
             <>
                 {/* <div style={{ width: "100%", height: "100%", maxWidth: "100%", maxHeight: "100%", position: "absolute", zIndex: 2, background: cell.color, opacity: "50%" }} /> */}
                 <img style={{ width: "100%", height: "100%" }} src={src} />
+                {/* <img style={{ width: "100%", height: "100%" }} src={src} /> */}
+                {/* <LightingSource
+                    style={{
+                        // display: "block",
+                    }}
+                    imgSrc={src} distance={props.distance}></LightingSource> */}
                 {/* <img style={{ width: "100%", height: "100%", position: "relative", zIndex: 1 }} src={tetrisCellBase} /> */}
             </>
         )

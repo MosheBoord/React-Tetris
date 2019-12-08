@@ -4,6 +4,7 @@ import "../App.css";
 import TetrisCell from "./TetrisCell";
 import UpcomingTetrisPiece from "./UpcomingTetrisPiece";
 import { Button, Progress } from "reactstrap";
+import GarbageIcon from "./GarbageIcon";
 
 const PowerPanel = props => {
     let board = props.board ? props.board : [];
@@ -19,6 +20,18 @@ const PowerPanel = props => {
             margin: "10px",
             background: "black",
         }}>
+            <div style={{
+                // border: "3px solid grey",
+                color: "white",
+                width: "40%",
+                height: "20%",
+                textAlign: "center",
+                margin: "5px"
+            }}>
+                <div style={{ margin: "10px" }}>
+                </div>
+                <GarbageIcon garbagePercentage={props.garbagePercentage} phase={props.phase} garbagePhase={props.garbagePhase} />
+            </div>
             <div style={{
                 border: "3px solid grey",
                 color: "white",
@@ -69,7 +82,7 @@ const mapStateToProps = state => ({
     nextPiece: state.nextPiece,
     score: state.score,
     rowsCleared: state.rowsCleared,
-    garbagePhase: state.garbagePhase,
+    phase: state.phase,
     garbagePercentage: state.garbagePercentage,
     flattenPercentage: state.flattenPercentage,
     wildPercentage: state.wildPercentage,

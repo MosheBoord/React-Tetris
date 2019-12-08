@@ -63,6 +63,20 @@ export default class TetrisPiece {
                 this.cells[1] = { x: 1, y: 2, color: TetrisPiece.White, isEmpty: false }
                 this.length = 4;
                 break;
+            case TetrisPiece.ROW:
+                this.cells[0] = { x: 0, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[1] = { x: 1, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[2] = { x: 2, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[3] = { x: 3, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[4] = { x: 4, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[5] = { x: 5, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[6] = { x: 6, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[7] = { x: 7, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[8] = { x: 8, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.cells[9] = { x: 9, y: 1, color: TetrisPiece.Rainbow, isEmpty: false }
+                this.x = 0;
+                this.y = -2;
+                break;
             default:
         }
         this.cells.forEach(cell => {
@@ -239,6 +253,7 @@ TetrisPiece.T = 4;
 TetrisPiece.S = 5;
 TetrisPiece.Z = 6;
 TetrisPiece.TWO = 7;
+TetrisPiece.ROW = 8;
 
 TetrisPiece.Blue = 0;
 TetrisPiece.LightBlue = 1;
