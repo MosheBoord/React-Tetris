@@ -6,7 +6,13 @@ import Board from "./components/Board";
 import OptionsPanel from "./components/OptionsPanel"
 import PowerPanel from "./components/PowerPanel"
 import { Provider } from "react-redux";
-import store, { boardUpdate, getGarbagePercentage, getPhase } from "./store";
+import store, {
+    boardUpdate,
+    getGarbagePercentage,
+    getPhase,
+    getFlattenedPowerUses,
+    getTwoPiecePowerUses,
+} from "./store";
 import "./App.css";
 import Tetris from "./game/Tetris";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -15,6 +21,7 @@ ReactDOM.render(
     (
         <Provider store={store}>
             <div style={{
+                backgroundColor: "grey",
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
@@ -34,6 +41,8 @@ tetris.subscribeToGameState(store, {
     tetrisBoard: boardUpdate,
     garbagePercentage: getGarbagePercentage,
     phase: getPhase,
+    flattenedPowerUses: getFlattenedPowerUses,
+    twoPiecePowerUses: getTwoPiecePowerUses,
 })
 
 tetris.setFrameRate(1000 / 1);

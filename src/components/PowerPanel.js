@@ -5,6 +5,8 @@ import TetrisCell from "./TetrisCell";
 import UpcomingTetrisPiece from "./UpcomingTetrisPiece";
 import { Button, Progress } from "reactstrap";
 import GarbageIcon from "./GarbageIcon";
+import FlattenedRowPower from "./FlattenedRowPower";
+import TwoPiecePower from "./TwoPiecePower";
 
 const PowerPanel = props => {
     let board = props.board ? props.board : [];
@@ -23,18 +25,6 @@ const PowerPanel = props => {
             <div style={{
                 // border: "3px solid grey",
                 color: "white",
-                width: "40%",
-                height: "20%",
-                textAlign: "center",
-                margin: "5px"
-            }}>
-                <div style={{ margin: "10px" }}>
-                </div>
-                <GarbageIcon garbagePercentage={props.garbagePercentage} phase={props.phase} garbagePhase={props.garbagePhase} />
-            </div>
-            <div style={{
-                border: "3px solid grey",
-                color: "white",
                 width: "60%",
                 height: "15%",
                 textAlign: "center",
@@ -49,7 +39,7 @@ const PowerPanel = props => {
                 </div>
             </div>
             <div style={{
-                border: "3px solid grey",
+                // border: "3px solid grey",
                 color: "white",
                 width: "60%",
                 height: "30%",
@@ -57,11 +47,40 @@ const PowerPanel = props => {
                 margin: "5px"
             }}>
                 <div style={{ margin: "10px" }}>
-                    Next Piece
+                    Next Piece:
                 </div>
+                {/* <div style={{ border: "3px solid grey" }}> */}
                 <UpcomingTetrisPiece nextPiece={props.nextPiece} />
+                {/* </div> */}
+
             </div>
             <div style={{
+                // border: "3px solid grey",
+                color: "white",
+                width: "60%",
+                height: "30%",
+                textAlign: "center",
+                margin: "5px"
+            }}>
+                <div style={{ margin: "10px" }}>
+                    <FlattenedRowPower uses={props.flattenedPowerUses} />
+                    <TwoPiecePower uses={props.twoPiecePowerUses} />
+                </div>
+
+            </div>
+            <div style={{
+                // border: "3px solid grey",
+                color: "white",
+                width: "40%",
+                height: "20%",
+                textAlign: "center",
+                margin: "5px"
+            }}>
+                <div style={{ margin: "10px" }}>
+                </div>
+                <GarbageIcon garbagePercentage={props.garbagePercentage} phase={props.phase} garbagePhase={props.garbagePhase} />
+            </div>
+            {/* <div style={{
                 border: "3px solid grey",
                 color: "white",
                 width: "90%",
@@ -73,7 +92,7 @@ const PowerPanel = props => {
                     Garbage:
                     <Progress animated color="danger" value={props.garbagePercentage} />
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };
@@ -86,6 +105,8 @@ const mapStateToProps = state => ({
     garbagePercentage: state.garbagePercentage,
     flattenPercentage: state.flattenPercentage,
     wildPercentage: state.wildPercentage,
+    flattenedPowerUses: state.flattenedPowerUses,
+    twoPiecePowerUses: state.twoPiecePowerUses,
 });
 
 const connectedBoard = connect(mapStateToProps)(PowerPanel);

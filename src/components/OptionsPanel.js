@@ -33,6 +33,10 @@ const OptionsPanel = props => {
 
                     Use the A and D keys to rotate the piece.
 
+                    Use the W key to activate your Rainbow Row ability.
+
+                    Use the S key to activate your Smooth Fill In ablility.
+
                     Use the Space key to swap the current piece with the upcomming piece.
                 </div>
                 <div style={{ margin: "10px" }}>

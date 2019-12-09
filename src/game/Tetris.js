@@ -53,7 +53,7 @@ export default class Tetris extends VideoGame {
         this.floorKicks = 0;
         this.floorKickLimit = 5;
         this.garbagePoints = 0;
-        this.garbagePointLimit = 20;
+        this.garbagePointLimit = 25;
         this.timeInAir = 0;
         this.twoPieceMicroPoints = 0;
         this.twoPieceUseges = 0;
@@ -180,7 +180,11 @@ export default class Tetris extends VideoGame {
             default:
         }
 
-        this.setGameState({ phase: this.phase });
+        this.setGameState({
+            phase: this.phase,
+            twoPiecePowerUses: this.twoPieceUseges,
+            flattenedPowerUses: this.flattenRowUseges
+        });
         this.calculateCompletedRows();
         this.redrawState();
     }
@@ -232,8 +236,8 @@ export default class Tetris extends VideoGame {
             this.score += this.level;
             this.store.dispatch({ type: "SCORE", score: this.score })
             this.garbagePoints++;
-            console.log((this.garbagePoints / (this.garbagePointLimit - 1) * 100));
-            // this.setGameState({ garbagePercentage: (this.garbagePoints / (this.garbagePointLimit - 1) * 100) });
+            // console.log((this.garbagePoints / (this.garbagePointLimit - 1) * 100));
+            this.setGameState({ garbagePercentage: (this.garbagePoints / (this.garbagePointLimit - 1) * 100) });
         }
 
 
@@ -246,12 +250,13 @@ export default class Tetris extends VideoGame {
             }
             this.ghostPiece = null;
             this.garbagePoints = 0;
-            // this.setGameState({ garbagePercentage: 0 });
+            this.setGarbageLimit();
+            this.setGameState({ garbagePercentage: 0 });
             this.phase = GARBAGE;
         } else {
             if (this.timeInAir < 250) {
                 this.twoPieceMicroPoints += 250 - this.timeInAir;
-                this.setGameState({ garbagePercentage: this.twoPieceMicroPoints / 60 });
+                // this.setGameState({ garbagePercentage: this.twoPieceMicroPoints / 60 });
                 if (this.twoPieceMicroPoints >= 6000) {
                     this.twoPieceMicroPoints -= 6000;
                     this.twoPieceUseges++;
@@ -609,9 +614,9 @@ export default class Tetris extends VideoGame {
         this.store.dispatch({ type: "SCORE", score: this.score })
 
         this.flattenRowPoints += (this.rowsCompleted.length * 2) - 1
-        while (this.flattenRowPoints >= 30) {
+        while (this.flattenRowPoints >= 20) {
             this.flattenRowUseges++;
-            this.flattenRowPoints -= 30;
+            this.flattenRowPoints -= 20;
             // here we need to dispatch the uses
         }
 
@@ -689,6 +694,26 @@ export default class Tetris extends VideoGame {
 
         let wholeUnits = Math.floor(this.downwardForce);
         this.downwardForce -= wholeUnits;
+    }
+
+    setGarbageLimit() {
+        if (this.level > 300) {
+            this.garbagePointLimit = 3;
+        } else if (this.level > 250) {
+            this.garbagePointLimit = 4;
+        } else if (this.level > 215) {
+            this.garbagePointLimit = 5;
+        } else if (this.level > 185) {
+            this.garbagePointLimit = 6;
+        } else if (this.level > 165) {
+            this.garbagePointLimit = 7;
+        } else if (this.level > 150) {
+            this.garbagePointLimit = 8;
+        } else if (this.level > 140) {
+            this.garbagePointLimit = 9;
+        } else if (this.garbagePointLimit > 10) {
+            this.garbagePointLimit--;
+        }
     }
 }
 

@@ -7,10 +7,10 @@ const logger = createLogger({
     predicate: (getState, action) => {
         // Use the next line to disable specific actions from being logged.
         // return ![ACTION_TYPE_ONE, ACTION_TYPE_TWO, ...].includes(action.type);
-        // return ![BOARD_UPDATE, SCORE, NEXT_PIECE].includes(action.type);
+        return ![BOARD_UPDATE, SCORE, NEXT_PIECE, GET_PHASE].includes(action.type);
 
         // Return false if you don't want to log anything.
-        return false;
+        // return true;
     }
 });
 
@@ -30,6 +30,10 @@ const GARBAGE_PERCENTAGE = "GARBAGE_PERCENTAGE";
 const GARBAGE_PHASE = "GARBAGE_PHASE";
 
 const GET_PHASE = "GET_PHASE";
+
+const GET_FLATTENED_USES = "GET_FLATTENED_USES";
+
+const GET_TWO_PIECE_USES = "GET_TWO_PIECE_USES";
 
 
 //ACTION CREATORS
@@ -58,6 +62,18 @@ export const getPhase = (phase) => ({
     type: GET_PHASE,
     phase
 })
+
+export const getFlattenedPowerUses = (flattenedPowerUses) => ({
+    type: GET_FLATTENED_USES,
+    flattenedPowerUses
+})
+
+export const getTwoPiecePowerUses = (twoPiecePowerUses) => ({
+    type: GET_TWO_PIECE_USES,
+    twoPiecePowerUses
+})
+
+
 
 // setting up an initial chessboard state
 const tetrisBoard = [];
@@ -117,6 +133,16 @@ const reducer = (prevState = initialState, action) => {
             return {
                 ...prevState,
                 phase: action.phase,
+            };
+        case GET_FLATTENED_USES:
+            return {
+                ...prevState,
+                flattenedPowerUses: action.flattenedPowerUses,
+            };
+        case GET_TWO_PIECE_USES:
+            return {
+                ...prevState,
+                twoPiecePowerUses: action.twoPiecePowerUses,
             };
         default:
             return prevState;
