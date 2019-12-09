@@ -2,6 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import "../App.css";
 import garbageIcon from "../images/Garbage.png";
+import garbageIconGreyedOut from "../images/Garbage greyed out.png";
 
 const GARBAGE = "GARBAGE";
 
@@ -26,7 +27,12 @@ const GarbageIcon = props => {
             }} src={garbageIcon} />
         )
     } else {
-        return null;
+        return (
+            <img style={{
+                width: "60%",
+                height: "60%",
+            }} src={garbageIconGreyedOut} />
+        )
     }
 
 }

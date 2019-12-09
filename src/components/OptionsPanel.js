@@ -37,7 +37,7 @@ const OptionsPanel = props => {
 
                     Use the S key to activate your Smooth Fill In ablility.
 
-                    Use the Space key to swap the current piece with the upcomming piece.
+                    Use the Space key to swap the current piece with the upcoming piece.
                 </div>
                 <div style={{ margin: "10px" }}>
                     Goal: Clear as many rows as possible by filling them up.

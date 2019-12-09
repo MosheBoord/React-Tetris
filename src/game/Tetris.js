@@ -61,6 +61,7 @@ export default class Tetris extends VideoGame {
         this.flattenRowUseges = 0;
         this.rainbowPieces = null;
         this.rainbowLandedFrames = 0;
+        this.rainbowThreshold = 7;
 
         this.gameOverCells = [];
         const gameOverGrid = setUpGameOverCells();
@@ -614,9 +615,10 @@ export default class Tetris extends VideoGame {
         this.store.dispatch({ type: "SCORE", score: this.score })
 
         this.flattenRowPoints += (this.rowsCompleted.length * 2) - 1
-        while (this.flattenRowPoints >= 20) {
+        while (this.flattenRowPoints >= this.rainbowThreshold) {
             this.flattenRowUseges++;
-            this.flattenRowPoints -= 20;
+            this.flattenRowPoints -= this.rainbowThreshold;
+            this.rainbowThreshold += 5;
             // here we need to dispatch the uses
         }
 
