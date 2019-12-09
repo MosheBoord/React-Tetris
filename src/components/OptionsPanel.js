@@ -19,7 +19,7 @@ const OptionsPanel = props => {
             background: "black",
         }}>
             <div style={{
-                border: "3px solid blue",
+                // border: "3px solid blue",
                 color: "white",
                 width: "80%",
                 height: "80%",
