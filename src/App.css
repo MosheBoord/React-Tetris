@@ -21,6 +21,22 @@
   color: #09d3ac;
 }
 
+/* body {
+  background-color: grey;
+  height: 100%;
+  width: 100%;
+} */
+
+html, body {
+  margin: 0;
+  height: 100vh;
+}
+
+#root {
+  margin: 0;
+  height: 100vh;
+}
+
 @keyframes garbageApearence {
   from {
     opacity: 0%;
