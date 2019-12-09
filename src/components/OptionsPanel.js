@@ -14,12 +14,12 @@ const OptionsPanel = props => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            border: "3px solid grey",
+            border: "3px solid blue",
             margin: "10px",
             background: "black",
         }}>
             <div style={{
-                border: "3px solid grey",
+                border: "3px solid blue",
                 color: "white",
                 width: "80%",
                 height: "80%",

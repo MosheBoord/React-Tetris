@@ -18,7 +18,7 @@ const PowerPanel = props => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            border: "3px solid grey",
+            border: "3px solid blue",
             margin: "10px",
             background: "black",
         }}>

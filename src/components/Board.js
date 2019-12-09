@@ -12,7 +12,7 @@ const Board = props => {
             height: "600px",
             display: "flex",
             flexWrap: "wrap",
-            border: "3px solid grey",
+            border: "3px solid blue",
             margin: "10px",
             background: "black",
         }}>
