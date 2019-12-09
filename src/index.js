@@ -25,7 +25,9 @@ ReactDOM.render(
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
-                alignItems: "center"
+                alignItems: "center",
+                height: "100%",
+                width: "100%",
             }}>
                 <OptionsPanel />
                 <Board />
