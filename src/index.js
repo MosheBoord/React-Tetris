@@ -12,6 +12,7 @@ import store, {
     getPhase,
     getFlattenedPowerUses,
     getTwoPiecePowerUses,
+    resetState,
 } from "./store";
 import "./App.css";
 import Tetris from "./game/Tetris";
@@ -29,7 +30,7 @@ ReactDOM.render(
                 height: "100%",
                 width: "100%",
             }}>
-                <OptionsPanel />
+                <OptionsPanel reset={resetFunction} />
                 <Board />
                 <PowerPanel />
             </div>
@@ -38,7 +39,7 @@ ReactDOM.render(
     , document.getElementById("root")
 );
 
-const tetris = new Tetris();
+let tetris = new Tetris();
 tetris.subscribeToGameState(store, {
     tetrisBoard: boardUpdate,
     garbagePercentage: getGarbagePercentage,
@@ -50,6 +51,31 @@ tetris.subscribeToGameState(store, {
 tetris.setFrameRate(1000 / 1);
 
 tetris.run();
+
+let resetable = true;
+
+function resetFunction() {
+    tetris.endGame();
+    store.dispatch(resetState());
+    if (resetable) {
+        setTimeout(() => {
+            tetris.stop();
+            tetris = new Tetris();
+
+            tetris.subscribeToGameState(store, {
+                tetrisBoard: boardUpdate,
+                garbagePercentage: getGarbagePercentage,
+                phase: getPhase,
+                flattenedPowerUses: getFlattenedPowerUses,
+                twoPiecePowerUses: getTwoPiecePowerUses,
+            })
+
+            tetris.setFrameRate(1000 / 1);
+
+            tetris.run();
+        }, 1500)
+    }
+}
 
 // tetris.runNextFrame();
 

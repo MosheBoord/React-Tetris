@@ -717,6 +717,21 @@ export default class Tetris extends VideoGame {
             this.garbagePointLimit--;
         }
     }
+
+    endGame() {
+        this.gameOverCells = [];
+        for (let y = 0; y < 20; y++) {
+            for (let x = 0; x < 10; x++) {
+                this.gameOverCells.push({ x, y, isEmpty: true });
+            }
+        }
+        this.phase = GAME_OVER;
+        this.setGameState({ garbagePercentage: 0 });
+        // this.gameOverCells.sort(() => Math.round(Math.random));
+        this.shuffle(this.gameOverCells);
+        this.ghostPiece = null;
+        this.currentPiece = null;
+    }
 }
 
 function setUpGameOverCells() {

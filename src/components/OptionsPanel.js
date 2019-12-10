@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import "../App.css";
 import TetrisCell from "./TetrisCell";
 import UpcomingTetrisPiece from "./UpcomingTetrisPiece";
+import { Button, Progress } from "reactstrap";
 
 const OptionsPanel = props => {
     let board = props.board ? props.board : [];
@@ -42,6 +43,11 @@ const OptionsPanel = props => {
                 <div style={{ margin: "10px" }}>
                     Goal: Clear as many rows as possible by filling them up.
                 </div>
+                <br></br>
+                <div style={{ margin: "10px" }}>
+                    <Button onClick={props.reset}>Reset</Button>
+                </div>
+
             </div>
         </div>
     );

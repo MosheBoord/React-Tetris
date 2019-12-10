@@ -35,6 +35,8 @@ const GET_FLATTENED_USES = "GET_FLATTENED_USES";
 
 const GET_TWO_PIECE_USES = "GET_TWO_PIECE_USES";
 
+const RESET_STATE = "RESET_STATE";
+
 
 //ACTION CREATORS
 
@@ -73,9 +75,11 @@ export const getTwoPiecePowerUses = (twoPiecePowerUses) => ({
     twoPiecePowerUses
 })
 
+export const resetState = () => ({
+    type: RESET_STATE,
+})
 
 
-// setting up an initial chessboard state
 const tetrisBoard = [];
 for (let y = 0; y < 20; y++) {
     let row = [];
@@ -144,6 +148,8 @@ const reducer = (prevState = initialState, action) => {
                 ...prevState,
                 twoPiecePowerUses: action.twoPiecePowerUses,
             };
+        case RESET_STATE:
+            return initialState;
         default:
             return prevState;
     }
