@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import "../App.css";
 import TetrisCell from "./TetrisCell";
 import UpcomingTetrisPiece from "./UpcomingTetrisPiece";
-import { Button, Progress } from "reactstrap";
+import { Button, Progress, Label } from "reactstrap";
 
 const OptionsPanel = props => {
     let board = props.board ? props.board : [];
@@ -45,7 +45,13 @@ const OptionsPanel = props => {
                 </div>
                 <br></br>
                 <div style={{ margin: "10px" }}>
-                    <Button onClick={props.reset}>Reset</Button>
+                    <Button onClick={(e) => {
+                        // e.preventDefault();
+                        props.reset();
+                        // window.focus();
+                        // document.body.focus();
+                        document.activeElement.blur()
+                    }}>Reset</Button>
                 </div>
 
             </div>

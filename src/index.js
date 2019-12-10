@@ -52,29 +52,25 @@ tetris.setFrameRate(1000 / 1);
 
 tetris.run();
 
-let resetable = true;
-
 function resetFunction() {
     tetris.endGame();
     store.dispatch(resetState());
-    if (resetable) {
-        setTimeout(() => {
-            tetris.stop();
-            tetris = new Tetris();
+    setTimeout(() => {
+        tetris.stop();
+        tetris = new Tetris();
 
-            tetris.subscribeToGameState(store, {
-                tetrisBoard: boardUpdate,
-                garbagePercentage: getGarbagePercentage,
-                phase: getPhase,
-                flattenedPowerUses: getFlattenedPowerUses,
-                twoPiecePowerUses: getTwoPiecePowerUses,
-            })
+        tetris.subscribeToGameState(store, {
+            tetrisBoard: boardUpdate,
+            garbagePercentage: getGarbagePercentage,
+            phase: getPhase,
+            flattenedPowerUses: getFlattenedPowerUses,
+            twoPiecePowerUses: getTwoPiecePowerUses,
+        })
 
-            tetris.setFrameRate(1000 / 1);
+        tetris.setFrameRate(1000 / 1);
 
-            tetris.run();
-        }, 1500)
-    }
+        tetris.run();
+    }, 1500)
 }
 
 // tetris.runNextFrame();
