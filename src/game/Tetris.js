@@ -1,10 +1,9 @@
-
 import VideoGame from "./VideoGame";
 import TetrisPiece from "./TetrisPiece";
 import KeyEvent from "./KeyEvent";
 
 //the following is bad code, done quickly to get it working, but should be redone to have entire state change to update store.
-import nextPieceDispatcher from "../store"
+import nextPieceDispatcher from "../store";
 
 // LIST OF PHASES
 const PIECE_FALLING = "PIECE_FALLING";
@@ -12,7 +11,6 @@ const PIECE_ON_FLOOR = "PIECE_ON_FLOOR";
 const GARBAGE = "GARBAGE";
 const GAME_OVER = "GAME_OVER";
 const RAINBOW = "RAINBOW";
-
 
 export default class Tetris extends VideoGame {
     constructor() {
@@ -61,7 +59,7 @@ export default class Tetris extends VideoGame {
         this.flattenRowUseges = 0;
         this.rainbowPieces = null;
         this.rainbowLandedFrames = 0;
-        this.rainbowThreshold = 7;
+        this.rainbowThreshold = 10;
 
         this.gameOverCells = [];
         const gameOverGrid = setUpGameOverCells();
@@ -74,7 +72,7 @@ export default class Tetris extends VideoGame {
 
     setKeyStatus(keyCode, boolean) {
         if (boolean) {
-            this.keyPressed({ keyCode })
+            this.keyPressed({ keyCode });
         }
     }
 
@@ -139,7 +137,10 @@ export default class Tetris extends VideoGame {
             case PIECE_ON_FLOOR:
                 this.floorFrames++;
                 this.stoodInPlace++;
-                if (this.floorFrames >= this.floorFrameLimit || this.stoodInPlace >= this.standInPlaceLimit) {
+                if (
+                    this.floorFrames >= this.floorFrameLimit ||
+                    this.stoodInPlace >= this.standInPlaceLimit
+                ) {
                     this.switchCurrentPiece();
                     this.floorFrames = 0;
                     if (this.phase !== GARBAGE) {
@@ -184,7 +185,7 @@ export default class Tetris extends VideoGame {
         this.setGameState({
             phase: this.phase,
             twoPiecePowerUses: this.twoPieceUseges,
-            flattenedPowerUses: this.flattenRowUseges
+            flattenedPowerUses: this.flattenRowUseges,
         });
         this.calculateCompletedRows();
         this.redrawState();
@@ -235,12 +236,14 @@ export default class Tetris extends VideoGame {
             this.timeInAir = 0;
         } else {
             this.score += this.level;
-            this.store.dispatch({ type: "SCORE", score: this.score })
+            this.store.dispatch({ type: "SCORE", score: this.score });
             this.garbagePoints++;
             // console.log((this.garbagePoints / (this.garbagePointLimit - 1) * 100));
-            this.setGameState({ garbagePercentage: (this.garbagePoints / (this.garbagePointLimit - 1) * 100) });
+            this.setGameState({
+                garbagePercentage:
+                    (this.garbagePoints / (this.garbagePointLimit - 1)) * 100,
+            });
         }
-
 
         if (this.garbagePoints >= this.garbagePointLimit) {
             this.currentPiece = this.getNextPiece();
@@ -273,7 +276,6 @@ export default class Tetris extends VideoGame {
         }
 
         this.checkForCompletedRows(this.currentPiece);
-
     }
 
     calculateKeyMovements() {
@@ -288,7 +290,10 @@ export default class Tetris extends VideoGame {
                 this.currentPiece.x++;
                 this.keysStatus.right--;
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canMoveRight(prevBoard, 0, -1) && this.floorKicks <= this.floorKickLimit) {
+            } else if (
+                this.currentPiece.canMoveRight(prevBoard, 0, -1) &&
+                this.floorKicks <= this.floorKickLimit
+            ) {
                 this.floorKicks++;
                 this.currentPiece.y--;
                 this.currentPiece.x++;
@@ -306,7 +311,10 @@ export default class Tetris extends VideoGame {
                 this.currentPiece.x--;
                 this.keysStatus.left--;
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canMoveLeft(prevBoard, 0, -1) && this.floorKicks <= this.floorKickLimit) {
+            } else if (
+                this.currentPiece.canMoveLeft(prevBoard, 0, -1) &&
+                this.floorKicks <= this.floorKickLimit
+            ) {
                 this.floorKicks++;
                 this.currentPiece.y--;
                 this.currentPiece.x--;
@@ -319,7 +327,11 @@ export default class Tetris extends VideoGame {
             this.keysStatus.left = 0;
         }
 
-        if (this.keysStatus.down && this.currentPiece && this.currentPiece.canMoveDown(prevBoard)) {
+        if (
+            this.keysStatus.down &&
+            this.currentPiece &&
+            this.currentPiece.canMoveDown(prevBoard)
+        ) {
             this.currentPiece.y++;
             this.keysStatus.down--;
             this.keysStatus.up = 0;
@@ -378,22 +390,34 @@ export default class Tetris extends VideoGame {
             if (this.currentPiece.canRotateCounterClockwise(prevBoard)) {
                 this.currentPiece.rotateCounterClockwise();
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 0, -1)) {
+            } else if (
+                this.currentPiece.canRotateCounterClockwise(prevBoard, 0, -1)
+            ) {
                 this.currentPiece.rotateCounterClockwise(0, -1);
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, -1, 0)) {
+            } else if (
+                this.currentPiece.canRotateCounterClockwise(prevBoard, -1, 0)
+            ) {
                 this.currentPiece.rotateCounterClockwise(-1, 0);
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 1, 0)) {
+            } else if (
+                this.currentPiece.canRotateCounterClockwise(prevBoard, 1, 0)
+            ) {
                 this.currentPiece.rotateCounterClockwise(1, 0);
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 0, -2)) {
+            } else if (
+                this.currentPiece.canRotateCounterClockwise(prevBoard, 0, -2)
+            ) {
                 this.currentPiece.rotateCounterClockwise(0, -2);
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, -2, 0)) {
+            } else if (
+                this.currentPiece.canRotateCounterClockwise(prevBoard, -2, 0)
+            ) {
                 this.currentPiece.rotateCounterClockwise(-2, 0);
                 this.stoodInPlace = 0;
-            } else if (this.currentPiece.canRotateCounterClockwise(prevBoard, 2, 0)) {
+            } else if (
+                this.currentPiece.canRotateCounterClockwise(prevBoard, 2, 0)
+            ) {
                 this.currentPiece.rotateCounterClockwise(2, 0);
                 this.stoodInPlace = 0;
             }
@@ -407,15 +431,45 @@ export default class Tetris extends VideoGame {
         }
 
         if (this.keysStatus.swapWithNextPiece && this.currentPiece) {
-            if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x, this.currentPiece.y)) {
+            if (
+                this.nextPiece.canSwap(
+                    prevBoard,
+                    this.currentPiece.x,
+                    this.currentPiece.y
+                )
+            ) {
                 this.swapPieces();
-            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x, this.currentPiece.y - 1)) {
+            } else if (
+                this.nextPiece.canSwap(
+                    prevBoard,
+                    this.currentPiece.x,
+                    this.currentPiece.y - 1
+                )
+            ) {
                 this.swapPieces(0, -1);
-            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x + 1, this.currentPiece.y)) {
+            } else if (
+                this.nextPiece.canSwap(
+                    prevBoard,
+                    this.currentPiece.x + 1,
+                    this.currentPiece.y
+                )
+            ) {
                 this.swapPieces(1, 0);
-            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x - 1, this.currentPiece.y)) {
+            } else if (
+                this.nextPiece.canSwap(
+                    prevBoard,
+                    this.currentPiece.x - 1,
+                    this.currentPiece.y
+                )
+            ) {
                 this.swapPieces(-1, 0);
-            } else if (this.nextPiece.canSwap(prevBoard, this.currentPiece.x, this.currentPiece.y - 1)) {
+            } else if (
+                this.nextPiece.canSwap(
+                    prevBoard,
+                    this.currentPiece.x,
+                    this.currentPiece.y - 1
+                )
+            ) {
                 this.swapPieces(0, -2);
             }
             // this.swapPieces();
@@ -424,7 +478,11 @@ export default class Tetris extends VideoGame {
             this.keysStatus.swapWithNextPiece = 0;
         }
 
-        if (this.keysStatus.getTwoPiece && this.twoPieceUseges && this.currentPiece.type !== TetrisPiece.TWO) {
+        if (
+            this.keysStatus.getTwoPiece &&
+            this.twoPieceUseges &&
+            this.currentPiece.type !== TetrisPiece.TWO
+        ) {
             const oldX = this.currentPiece.x;
             const oldY = this.currentPiece.y;
             this.currentPiece = this.getNextPiece(TetrisPiece.TWO);
@@ -443,7 +501,9 @@ export default class Tetris extends VideoGame {
             this.ghostPiece = null;
             this.rainbowPieces = [];
             for (let i = 0; i < 10; i++) {
-                this.rainbowPieces.push(this.getNextPiece(TetrisPiece.RAINBOW_PIECE));
+                this.rainbowPieces.push(
+                    this.getNextPiece(TetrisPiece.RAINBOW_PIECE)
+                );
                 this.rainbowPieces[i].x = i;
             }
             this.phase = RAINBOW;
@@ -471,11 +531,10 @@ export default class Tetris extends VideoGame {
     }
 
     calculateGravity() {
-
         if (this.phase === PIECE_FALLING) {
-            this.gravity = this.level * 1 / 600 + 1 / 60;
+            this.gravity = (this.level * 1) / 600 + 1 / 60;
         } else {
-            this.gravity = .25;
+            this.gravity = 0.25;
         }
 
         // this.gravity = 0;
@@ -550,7 +609,7 @@ export default class Tetris extends VideoGame {
                 if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
                     visualBoard[y][x] = cell;
                 }
-            })
+            });
         }
 
         if (this.currentPiece) {
@@ -560,7 +619,7 @@ export default class Tetris extends VideoGame {
                 if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
                     visualBoard[y][x] = cell;
                 }
-            })
+            });
         }
 
         if (this.rainbowPieces) {
@@ -570,7 +629,7 @@ export default class Tetris extends VideoGame {
                 if (y >= 0 && y <= 19 && x >= 0 && x <= 19 && board[y]) {
                     visualBoard[y][x] = piece.cells[0];
                 }
-            })
+            });
         }
 
         for (let y = 0; y < 20; y++) {
@@ -611,14 +670,20 @@ export default class Tetris extends VideoGame {
 
     deleteRows() {
         const board = this.getGameState().physicalBoard;
-        this.score += this.rowsCompleted.length * this.rowsCompleted.length * this.level * 50;
-        this.store.dispatch({ type: "SCORE", score: this.score })
+        this.score +=
+            this.rowsCompleted.length *
+            this.rowsCompleted.length *
+            this.level *
+            50;
+        this.store.dispatch({ type: "SCORE", score: this.score });
 
-        this.flattenRowPoints += (this.rowsCompleted.length * 2) - 1
+        // this.flattenRowPoints += this.rowsCompleted.length * 2 - 1;
+        this.flattenRowPoints +=
+            this.rowsCompleted.length * this.rowsCompleted.length;
         while (this.flattenRowPoints >= this.rainbowThreshold) {
             this.flattenRowUseges++;
             this.flattenRowPoints -= this.rainbowThreshold;
-            this.rainbowThreshold += 5;
+            this.rainbowThreshold += 7;
             // here we need to dispatch the uses
         }
 
@@ -626,10 +691,13 @@ export default class Tetris extends VideoGame {
             board.splice(this.rowsCompleted.shift(), 1);
             this.clearedRows++;
             this.level++;
-            this.store.dispatch({ type: "ROWS_CLEARED", rowsCleared: this.clearedRows })
+            this.store.dispatch({
+                type: "ROWS_CLEARED",
+                rowsCleared: this.clearedRows,
+            });
             const row = [];
             for (let x = 0; x < 10; x++) {
-                row.push({ isEmpty: true })
+                row.push({ isEmpty: true });
             }
             board.unshift(row);
         }
@@ -642,8 +710,15 @@ export default class Tetris extends VideoGame {
             this.ghostPiece.x = this.currentPiece.x;
             this.ghostPiece.y = this.currentPiece.y;
             this.currentPiece.cells.forEach(cell => {
-                this.ghostPiece.cells.push({ x: cell.x, y: cell.y, ghostPiece: true, piece: this.ghostPiece, color: cell.color, isEmpty: false })
-            })
+                this.ghostPiece.cells.push({
+                    x: cell.x,
+                    y: cell.y,
+                    ghostPiece: true,
+                    piece: this.ghostPiece,
+                    color: cell.color,
+                    isEmpty: false,
+                });
+            });
             while (this.ghostPiece.canMoveDown(prevBoard)) {
                 this.ghostPiece.y++;
             }
@@ -651,11 +726,12 @@ export default class Tetris extends VideoGame {
     }
 
     shuffle(array) {
-        let currentIndex = array.length, temporaryValue, randomIndex;
+        let currentIndex = array.length,
+            temporaryValue,
+            randomIndex;
 
         // While there remain elements to shuffle...
         while (0 !== currentIndex) {
-
             // Pick a remaining element...
             randomIndex = Math.floor(Math.random() * currentIndex);
             currentIndex -= 1;
@@ -670,7 +746,7 @@ export default class Tetris extends VideoGame {
     }
 
     runRainbowMovements() {
-        this.gravity = .2;
+        this.gravity = 0.2;
         this.downwardForce += this.gravity;
         const prevBoard = this.getGameState().physicalBoard;
         for (let i = 0; i < this.rainbowPieces.length; i++) {
@@ -682,13 +758,24 @@ export default class Tetris extends VideoGame {
             if (wholeUnits) {
                 let yLocation = this.rainbowPieces[i].y;
                 for (let y = 19; y > this.rainbowPieces[i].y; y--) {
-                    if (this.getGameState().physicalBoard[y][this.rainbowPieces[i].x].isEmpty) {
-                        if (y === 19 || !this.getGameState().physicalBoard[y + 1][this.rainbowPieces[i].x].isEmpty) {
+                    if (
+                        this.getGameState().physicalBoard[y][
+                            this.rainbowPieces[i].x
+                        ].isEmpty
+                    ) {
+                        if (
+                            y === 19 ||
+                            !this.getGameState().physicalBoard[y + 1][
+                                this.rainbowPieces[i].x
+                            ].isEmpty
+                        ) {
                             yLocation = y;
                         }
                     }
                 }
-                this.getGameState().physicalBoard[yLocation][this.rainbowPieces[i].x] = this.rainbowPieces[i].cells[0];
+                this.getGameState().physicalBoard[yLocation][
+                    this.rainbowPieces[i].x
+                ] = this.rainbowPieces[i].cells[0];
                 this.rainbowPieces[i] = null;
             }
         }
@@ -716,6 +803,7 @@ export default class Tetris extends VideoGame {
         } else if (this.garbagePointLimit > 10) {
             this.garbagePointLimit--;
         }
+        console.log("garbage point limit", this.garbagePointLimit);
     }
 
     endGame() {
